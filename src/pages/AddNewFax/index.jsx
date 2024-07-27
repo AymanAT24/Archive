@@ -15,7 +15,8 @@ const AddNewFax = () => {
   const [faxNumber, setFaxNumber] = useState('');
   const [faxType, setFaxType] = useState('');
   const [about, setAbout] = useState('');
-  const [files, setFiles] = useState('');
+  const [files, setFiles] = useState([]);
+  const [fileUploadError, setFileUploadError] = useState('');
 
   const token = localStorage.getItem('userToken');
 
@@ -32,6 +33,22 @@ const AddNewFax = () => {
       })
       .catch((err) => {
         console.log(err);
+      });
+
+    axios
+      .get(`faxes/my-faxes`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        const userFaxesCount = res?.data.data.length;
+        setFaxNumber(userFaxesCount + 1);
+      })
+      .catch((err) => {
+        console.log(err);
+        setFaxNumber(1);
       });
   }, [token]);
 
@@ -75,20 +92,64 @@ const AddNewFax = () => {
       });
   };
 
-  const handelSubmt = (e) => {
+  const handleFileChange = (e) => {
+    setFiles(e.target.files);
+  };
+
+  const uploadFiles = async () => {
+    const formData = new FormData();
+    if (files.length === 1) {
+      formData.append('file', files[0]);
+    } else {
+      Array.from(files).forEach((file) => {
+        formData.append('files', file);
+      });
+    }
+
+    const url =
+      files.length === 1 ? '/uploads/uploadSingle' : '/uploads/uploadMultiple';
+
+    try {
+      const response = await axios.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.status === 'success') {
+        if (files.length === 1) {
+          return [response.data.data.file.path];
+        } else {
+          return response.data.data.files.map((file) => file.path);
+        }
+      } else {
+        throw new Error('File upload failed');
+      }
+    } catch (error) {
+      console.error(error);
+      setFileUploadError('Failed to upload files');
+      return [];
+    }
+  };
+
+  const handelSubmt = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    const fileUploadPaths = await uploadFiles();
+    if (fileUploadPaths.length === 0) {
+      setLoading(false);
+      return;
+    }
 
     axios
       .post(
         `faxes/add`,
         {
           comment,
-          faxNumber,
+          faxNumber, // Fax number is now set automatically
           faxType,
-          files: [
-            'public\\uploads\\66a391bf200ed376eceb3d11\\user-66a391bf200ed376eceb3d11-1722004966074-0.jpeg',
-          ],
+          files: fileUploadPaths,
           about,
         },
         {
@@ -101,6 +162,7 @@ const AddNewFax = () => {
       .then((response) => {
         console.log(JSON.stringify(response.data));
         setLoading(false);
+        navigate('/'); // Redirect to faxes page on success
       })
       .catch((error) => {
         setLoading(false);
@@ -178,22 +240,25 @@ const AddNewFax = () => {
               value={faxNumber}
               onChange={(e) => setFaxNumber(e.target.value)}
               placeholder="اضف رقم الفاكس*"
+              disabled // Disable manual input for fax number
             />
           </div>
           <div className="col-12 text-end fw-bold fs-5 mb-4">
             <label htmlFor="input1" className="form-label">
               نوع الفاكس
             </label>
-            <input
+            <select
               name="input1"
-              type="text"
               className="form-control"
               id="input1"
               required
               value={faxType}
               onChange={(e) => setFaxType(e.target.value)}
-              placeholder=" اضف نوع الفاكس *"
-            />
+            >
+              <option value="">اختر نوع الفاكس</option>
+              <option value="صادر">صادر</option>
+              <option value="وارد">وارد</option>
+            </select>
           </div>
           <div className="col-12 text-end fw-bold fs-5 mb-4">
             <label htmlFor="input1" className="form-label">
@@ -216,19 +281,21 @@ const AddNewFax = () => {
             </label>
             <input
               name="input1"
-              type="file "
+              type="file"
               className="form-control"
               id="input1"
               required
-              value={files}
-              onChange={(e) => setFiles(e.target.value)}
-              placeholder=""
+              onChange={handleFileChange}
+              multiple
             />
           </div>
 
+          {fileUploadError && (
+            <div className="text-danger mb-4">{fileUploadError}</div>
+          )}
+
           {!loading && (
             <button
-              onClick={() => navigate('/')}
               type="submit"
               className="d-grid col-3 py-3 fs-4 fw-bold align-content-center mx-auto btn btn-primary  mb-4"
             >

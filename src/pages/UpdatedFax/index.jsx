@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import axios from '@/api/axios';
 
@@ -7,40 +6,79 @@ const UpdatedFax = () => {
   const navigate = useNavigate();
   const item = useLocation()?.state?.item;
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState(item.name);
-  const [data, setData] = useState([]);
   const [comment, setComment] = useState(item?.comment);
-  const [faxNumber, setFaxNumber] = useState(item?.faxNumber);
-  const [faxType, setFaxType] = useState(item?.faxType);
-  const [about, setAbout] = useState(item?.about.name);
-  const [files, setFiles] = useState(item?.files[0]);
+  const [files, setFiles] = useState([]);
+  const [fileUploadError, setFileUploadError] = useState('');
 
-  const handelSubmt = (e) => {
+  const token = localStorage.getItem('userToken');
+
+  const handleFileChange = (e) => {
+    setFiles(e.target.files);
+  };
+
+  const uploadFiles = async () => {
+    if (files.length === 0) return [];
+
+    const formData = new FormData();
+    if (files.length === 1) {
+      formData.append('file', files[0]);
+    } else {
+      Array.from(files).forEach((file) => {
+        formData.append('files', file);
+      });
+    }
+
+    const url =
+      files.length === 1 ? '/uploads/uploadSingle' : '/uploads/uploadMultiple';
+
+    try {
+      const response = await axios.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.data.status === 'success') {
+        if (files.length === 1) {
+          return [response.data.data.file.path];
+        } else {
+          return response.data.data.files.map((file) => file.path);
+        }
+      } else {
+        throw new Error('File upload failed');
+      }
+    } catch (error) {
+      console.error(error);
+      setFileUploadError('Failed to upload files');
+      return [];
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    let token = localStorage.getItem('userToken');
+
+    const fileUploadPaths = await uploadFiles();
+    const updateData = {
+      comment: comment || item?.comment,
+      about: item?.about?._id,
+    };
+
+    if (fileUploadPaths.length > 0) {
+      updateData.files = fileUploadPaths;
+    }
+
     axios
-      .patch(
-        `faxes/${item?._id}`,
-        {
-          comment: comment,
-          faxNumber: faxNumber,
-          faxType: faxType,
-          files: [
-            'public\\uploads\\66a391bf200ed376eceb3d11\\user-66a391bf200ed376eceb3d11-1722004966074-0.jpeg',
-          ],
-          about: item?.about?._id,
+      .patch(`faxes/${item?._id}`, updateData, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      })
       .then((response) => {
         console.log(JSON.stringify(response.data));
         setLoading(false);
+        navigate('/'); // Redirect to faxes page on success
       })
       .catch((error) => {
         setLoading(false);
@@ -48,7 +86,6 @@ const UpdatedFax = () => {
       });
   };
 
-  console.log('item', item);
   return (
     <div className="dashboard d-flex flex-row">
       <div className="container text-center">
@@ -58,85 +95,40 @@ const UpdatedFax = () => {
           </h2>
         </div>
         <form
-          onSubmit={handelSubmt}
+          onSubmit={handleSubmit}
           className="container d-flex flex-row justify-content-center align-content-center flex-wrap my-4"
         >
           <div className="col-12 text-end fw-bold fs-5 mb-4">
-            <label htmlFor="input1" className="form-label">
+            <label htmlFor="comment" className="form-label">
               تعليق
             </label>
             <input
-              name="input1"
+              name="comment"
               type="text"
               className="form-control"
-              id="input1"
-              required
+              id="comment"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="اضف تعليق*"
+              placeholder="اضف تعليق"
             />
           </div>
           <div className="col-12 text-end fw-bold fs-5 mb-4">
-            <label htmlFor="input1" className="form-label">
-              رقم الفاكس
-            </label>
-            <input
-              name="input1"
-              type="text"
-              className="form-control"
-              id="input1"
-              required
-              value={faxNumber}
-              onChange={(e) => setFaxNumber(e.target.value)}
-              placeholder="اضف رقم الفاكس*"
-            />
-          </div>
-          <div className="col-12 text-end fw-bold fs-5 mb-4">
-            <label htmlFor="input1" className="form-label">
-              نوع الفاكس
-            </label>
-            <input
-              name="input1"
-              type="text"
-              className="form-control"
-              id="input1"
-              required
-              value={faxType}
-              onChange={(e) => setFaxType(e.target.value)}
-              placeholder=" اضف نوع الفاكس *"
-            />
-          </div>
-          {/* <div className="col-12 text-end fw-bold fs-5 mb-4">
-            <label htmlFor="input1" className="form-label">
-              بشأن
-            </label>
-            <input
-              name="input1"
-              type="text"
-              className="form-control"
-              id="input1"
-              required
-              value={about}
-              onChange={(e) => setAbout(e.target.value)}
-              placeholder=" اضف  موضوع الفاكس*"
-            />
-          </div> */}
-          <div className="col-12 text-end fw-bold fs-5 mb-4">
-            <label htmlFor="input1" className="form-label">
+            <label htmlFor="files" className="form-label">
               ملف الفاكس
             </label>
             <input
-              name="input1"
-              type="text"
+              name="files"
+              type="file"
               className="form-control"
-              id="input1"
-              required
-              value={files}
-              onChange={(e) => setFiles(e.target.value)}
-              placeholder=""
-              disabled
+              id="files"
+              onChange={handleFileChange}
+              multiple
             />
           </div>
+
+          {fileUploadError && (
+            <div className="text-danger mb-4">{fileUploadError}</div>
+          )}
 
           {!loading && (
             <button
