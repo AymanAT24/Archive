@@ -14,6 +14,7 @@ import {
   ErrorPage,
   UpdatedFax,
   DetailsFax,
+  AddNewFax,
 } from '@/pages';
 
 function Protect({ children, protect = false, path = '', role = 'user' }) {
@@ -49,6 +50,7 @@ const Routers = () => {
             <Route path="/" element={<Home />} />
             <Route path="/update/:id" element={<UpdatedFax />} />
             <Route path="/Details/:id" element={<DetailsFax />} />
+            <Route path="/AddNewFax" element={<AddNewFax />} />
 
             {/*///////////////////////// auth ///////////////////////////////////////*/}
 

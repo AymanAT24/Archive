@@ -11,12 +11,13 @@ const Home = () => {
   // console.log(search);
 
   const [data, setData] = useState([]);
+
   useEffect(() => {
     axios
       .get(`faxes`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YTM5MTc2MjI0NTM2NjcxNTI3NGRiNyIsImlhdCI6MTcyMjAxNDA3OSwiZXhwIjoxNzIyMTAwNDc5fQ.N8TUdbC2vROvMrAeEOZYd50x_Jc7Gt6wJ5H0yS1oRQg`,
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YTM5MTc2MjI0NTM2NjcxNTI3NGRiNyIsImlhdCI6MTcyMjAxNDA3OSwiZXhwIjoxNzIyMTAwNDc5fQ.N8TUdbC2vROvMrAeEOZYd50x_Jc7Gt6wJ5H0yS1oRQgda`,
         },
       })
       .then((res) => {
@@ -34,6 +35,14 @@ const Home = () => {
         <h1 className="text-center my-5 text-dark fw-bolder shadow p-3 mb-5 rounded main-color ">
           جميع الفكسات
         </h1>
+        <Link to={'/AddNewFax'}>
+          <button
+            type="button"
+            className="btn my-5 text-start d-block p-3 btn-secondary"
+          >
+            اضافة فاكس جديد
+          </button>
+        </Link>
         <input
           className="form-control"
           list="datalistOptions"
@@ -48,31 +57,32 @@ const Home = () => {
           <option value="Los Angeles" />
           <option value="Chicago" />
         </datalist>
-        <table className="table hover text-dark  p-5 my-5">
+        <table className="table text-center table-hover text-dark  p-5 my-5">
           <thead>
             <tr>
-              <th>#</th>
-              <th>الاسم</th>
-              <th>النوع</th>
-              <th>الرقم</th>
-              <th>الايميل</th>
-              <th className="text-end">الاحداث</th>
+              <th className="p-4">#</th>
+              <th className="p-4">الاسم</th>
+              <th className="p-4"> رقم الفاكس</th>
+              <th className="p-4"> نوع الفاكس</th>
+              <th className="p-4">التاريخ</th>
+              <th className="p-4">الاحداث</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-center p-5 ">
             {/* {data?.filter(item => {
                 return search.toLowerCase() ='' ? item :item.firstName.toLowerCase().includes(search)
             }).map((item, index) => (
+              
             ))} */}
 
             {data?.data?.map((item, index) => (
               <tr>
-                <td>{index + 1}</td>
-                <td>{item?.user?.username}</td>
-                <td>{item?.faxNumber}</td>
-                <td>{item?.faxType}</td>
-                <td>{item?.about?.name}</td>
-                <td>
+                <td className="p-3">{index + 1}</td>
+                <td className="p-3">{item?.user?.username}</td>
+                <td className="p-3">{item?.faxNumber}</td>
+                <td className="p-3">{item?.faxType}</td>
+                <td className="p-3">{item?.date.slice(2, 10)}</td>
+                <td className="p-3">
                   <Link to={`/update/${item._id}`} state={{ item: item }}>
                     <button className="btn btn-outline-success mx-2 px-4">
                       تعديل

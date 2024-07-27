@@ -116,9 +116,6 @@ const Signup = () => {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
-                  <div id="emailHelp" className="form-text fw-bold">
-                    لن نشارك بريدك الإلكتروني أبدًا مع أي شخص آخر.{' '}
-                  </div>
                 </div>
                 <div className="mb-3">
                   <label

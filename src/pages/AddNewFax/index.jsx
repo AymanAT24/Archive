@@ -3,24 +3,23 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import axios from '@/api/axios';
 
-const UpdatedFax = () => {
+const AddNewFax = () => {
   const navigate = useNavigate();
-  const item = useLocation()?.state?.item;
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState(item.name);
+  const [name, setName] = useState('');
   const [data, setData] = useState([]);
-  const [comment, setComment] = useState(item?.comment);
-  const [faxNumber, setFaxNumber] = useState(item?.faxNumber);
-  const [faxType, setFaxType] = useState(item?.faxType);
-  const [about, setAbout] = useState(item?.about.name);
-  const [files, setFiles] = useState(item?.files[0]);
+  const [comment, setComment] = useState('');
+  const [faxNumber, setFaxNumber] = useState('');
+  const [faxType, setFaxType] = useState('');
+  const [about, setAbout] = useState('');
+  const [files, setFiles] = useState('');
 
   const handelSubmt = (e) => {
     e.preventDefault();
     setLoading(true);
     axios
-      .patch(
-        `faxes/${item?._id}`,
+      .post(
+        `faxes/add`,
         {
           comment: comment,
           faxNumber: faxNumber,
@@ -28,7 +27,7 @@ const UpdatedFax = () => {
           files: [
             'public\\uploads\\66a391bf200ed376eceb3d11\\user-66a391bf200ed376eceb3d11-1722004966074-0.jpeg',
           ],
-          about: item?.about?._id,
+          about: about,
         },
         {
           headers: {
@@ -47,19 +46,15 @@ const UpdatedFax = () => {
       });
   };
 
-  console.log('item', item);
   return (
     <div className="dashboard d-flex flex-row">
       <div className="container text-center">
         <div className="shadow-none p-3 mt-3 mb-5 bg-body rounded main-title">
           <h2 className="fs-1 fw-bold text-dark shadow p-3 mb-5 bg-body-tertiary rounded">
-            تعديل
+            اضافة فاكس جديد
           </h2>
         </div>
-        <form
-          onSubmit={handelSubmt}
-          className="container d-flex flex-row justify-content-center align-content-center flex-wrap my-4"
-        >
+        <form onSubmit={handelSubmt} className="container  flex-wrap my-4">
           <div className="col-12 text-end fw-bold fs-5 mb-4">
             <label htmlFor="input1" className="form-label">
               تعليق
@@ -105,7 +100,7 @@ const UpdatedFax = () => {
               placeholder=" اضف نوع الفاكس *"
             />
           </div>
-          {/* <div className="col-12 text-end fw-bold fs-5 mb-4">
+          <div className="col-12 text-end fw-bold fs-5 mb-4">
             <label htmlFor="input1" className="form-label">
               بشأن
             </label>
@@ -119,7 +114,7 @@ const UpdatedFax = () => {
               onChange={(e) => setAbout(e.target.value)}
               placeholder=" اضف  موضوع الفاكس*"
             />
-          </div> */}
+          </div>
           <div className="col-12 text-end fw-bold fs-5 mb-4">
             <label htmlFor="input1" className="form-label">
               ملف الفاكس
@@ -139,15 +134,16 @@ const UpdatedFax = () => {
 
           {!loading && (
             <button
+              onClick={() => navigate('/')}
               type="submit"
               className="d-grid col-3 py-3 fs-4 fw-bold align-content-center mx-auto btn btn-primary  mb-4"
             >
-              تعديل بيانات
+              اضافة
             </button>
           )}
           {loading && (
             <button className="d-grid col-3 py-3 fs-4 fw-bold align-content-center mx-auto btn btn-outline-primary mb-4">
-              جاري التعديل ...
+              جاري الاضافة ...
             </button>
           )}
           <button
@@ -162,4 +158,4 @@ const UpdatedFax = () => {
   );
 };
 
-export default UpdatedFax;
+export default AddNewFax;
