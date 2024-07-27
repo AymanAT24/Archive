@@ -42,6 +42,7 @@ const Login = () => {
       );
       toast.success('تم تسجيل الدخول بنجاح');
       setuser(data.data);
+      localStorage.setItem('userToken', data.token);
       // console.log(data);
       setIsPending(false);
     } catch (err) {

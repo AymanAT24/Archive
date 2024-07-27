@@ -9,18 +9,17 @@ export const AuthProvider = ({ children }) => {
 
   const [user, setuser] = useState();
   const [Fetched, setFetched] = useState(false);
+  const token = localStorage.getItem('userToken');
   useEffect(() => {
     const CheckUser = async () => {
       try {
         const { data } = await axios.get(
           'user/myProfile',
-          {
-            withCredentials: true,
-          },
+
           {
             headers: {
               'Content-Type': 'application/json',
-              // Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );

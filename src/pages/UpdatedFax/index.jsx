@@ -18,6 +18,7 @@ const UpdatedFax = () => {
   const handelSubmt = (e) => {
     e.preventDefault();
     setLoading(true);
+    let token = localStorage.getItem('userToken');
     axios
       .patch(
         `faxes/${item?._id}`,
@@ -33,7 +34,7 @@ const UpdatedFax = () => {
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YTM5MTc2MjI0NTM2NjcxNTI3NGRiNyIsImlhdCI6MTcyMjAxNDA3OSwiZXhwIjoxNzIyMTAwNDc5fQ.N8TUdbC2vROvMrAeEOZYd50x_Jc7Gt6wJ5H0yS1oRQg`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )

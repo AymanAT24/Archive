@@ -45,7 +45,8 @@ const Signup = () => {
         )
         .then((response) => {
           console.log(response);
-          navigate('/auth/verifyphoneCode');
+          localStorage.setItem('userToken', data.token);
+          // navigate('/auth/verifyphoneCode');
           toast.success('تم انشاء حساب بنجاح ,رجاء تأكيد الحساب');
         });
     } catch (err) {

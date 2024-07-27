@@ -1,38 +1,100 @@
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import axios from '@/api/axios';
 
 const AddNewFax = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
-  const [data, setData] = useState([]);
+  const [destinations, setDestinations] = useState([]);
+  const [selectedDestination, setSelectedDestination] = useState('');
+  const [subjects, setSubjects] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState('');
+  const [abouts, setAbouts] = useState([]);
   const [comment, setComment] = useState('');
   const [faxNumber, setFaxNumber] = useState('');
   const [faxType, setFaxType] = useState('');
   const [about, setAbout] = useState('');
   const [files, setFiles] = useState('');
 
+  const token = localStorage.getItem('userToken');
+
+  useEffect(() => {
+    axios
+      .get(`destinations`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setDestinations(res?.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [token]);
+
+  const handleDestinationChange = (e) => {
+    const destinationId = e.target.value;
+    setSelectedDestination(destinationId);
+
+    axios
+      .get(`subjects/${destinationId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setSubjects(res?.data.data);
+        setSelectedSubject('');
+        setAbouts([]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleSubjectChange = (e) => {
+    const subjectId = e.target.value;
+    setSelectedSubject(subjectId);
+
+    axios
+      .get(`about/${subjectId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setAbouts(res?.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const handelSubmt = (e) => {
     e.preventDefault();
     setLoading(true);
+
     axios
       .post(
         `faxes/add`,
         {
-          comment: comment,
-          faxNumber: faxNumber,
-          faxType: faxType,
+          comment,
+          faxNumber,
+          faxType,
           files: [
             'public\\uploads\\66a391bf200ed376eceb3d11\\user-66a391bf200ed376eceb3d11-1722004966074-0.jpeg',
           ],
-          about: about,
+          about,
         },
         {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YTM5MTc2MjI0NTM2NjcxNTI3NGRiNyIsImlhdCI6MTcyMjAxNDA3OSwiZXhwIjoxNzIyMTAwNDc5fQ.N8TUdbC2vROvMrAeEOZYd50x_Jc7Gt6wJ5H0yS1oRQg`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )
@@ -54,22 +116,55 @@ const AddNewFax = () => {
             اضافة فاكس جديد
           </h2>
         </div>
-        <form onSubmit={handelSubmt} className="container  flex-wrap my-4">
-          <div className="col-12 text-end fw-bold fs-5 mb-4">
-            <label htmlFor="input1" className="form-label">
-              تعليق
-            </label>
-            <input
-              name="input1"
-              type="text"
-              className="form-control"
-              id="input1"
-              required
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="اضف تعليق*"
-            />
-          </div>
+
+        <div className="drop-down mb-5 d-flex justify-content-between align-items-center">
+          <select
+            className="form-select ms-3"
+            aria-label="Default select example"
+            onChange={handleDestinationChange}
+            value={selectedDestination}
+          >
+            <option value="">اسم الجهة</option>
+            {destinations.map((destination) => (
+              <option key={destination._id} value={destination._id}>
+                {destination.name}
+              </option>
+            ))}
+          </select>
+          <select
+            className="form-select ms-3"
+            aria-label="Default select example"
+            onChange={handleSubjectChange}
+            value={selectedSubject}
+            disabled={!selectedDestination}
+          >
+            <option value="">الموضوع</option>
+            {subjects.map((subject) => (
+              <option key={subject._id} value={subject._id}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
+          <select
+            className="form-select"
+            aria-label="Default select example"
+            onChange={(e) => setAbout(e.target.value)}
+            value={about}
+            disabled={!selectedSubject}
+          >
+            <option value="">بشان</option>
+            {abouts.map((aboutItem) => (
+              <option key={aboutItem._id} value={aboutItem._id}>
+                {aboutItem.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <form
+          onSubmit={handelSubmt}
+          className="container d-flex justify-content-center align-items-center flex-wrap my-4"
+        >
           <div className="col-12 text-end fw-bold fs-5 mb-4">
             <label htmlFor="input1" className="form-label">
               رقم الفاكس
@@ -102,7 +197,7 @@ const AddNewFax = () => {
           </div>
           <div className="col-12 text-end fw-bold fs-5 mb-4">
             <label htmlFor="input1" className="form-label">
-              بشأن
+              تعليق
             </label>
             <input
               name="input1"
@@ -110,9 +205,9 @@ const AddNewFax = () => {
               className="form-control"
               id="input1"
               required
-              value={about}
-              onChange={(e) => setAbout(e.target.value)}
-              placeholder=" اضف  موضوع الفاكس*"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="اضف تعليق*"
             />
           </div>
           <div className="col-12 text-end fw-bold fs-5 mb-4">
@@ -121,14 +216,13 @@ const AddNewFax = () => {
             </label>
             <input
               name="input1"
-              type="text"
+              type="file "
               className="form-control"
               id="input1"
               required
               value={files}
               onChange={(e) => setFiles(e.target.value)}
               placeholder=""
-              disabled
             />
           </div>
 
