@@ -12,17 +12,6 @@ const Login = () => {
   const [isPending, setIsPending] = useState(false);
   const [userName, setuserName] = useState('');
   const [password, setPassword] = useState('');
-  // const notify = () =>
-  //   toast.error('من فضلك تأكد من رقم الهاتف او الرقم السري', {
-  //     position: 'top-right',
-  //     autoClose: 5000,
-  //     hideProgressBar: false,
-  //     closeOnClick: true,
-  //     pauseOnHover: true,
-  //     draggable: true,
-  //     progress: undefined,
-  //     theme: 'colored',
-  //   });
 
   const handelSubmit = async (e) => {
     e.preventDefault();
@@ -43,38 +32,36 @@ const Login = () => {
       toast.success('تم تسجيل الدخول بنجاح');
       setuser(data.data);
       localStorage.setItem('userToken', data.token);
-      // console.log(data);
       setIsPending(false);
+      if (
+        data.data.role === 'admin' ||
+        data.data.role === 'godAdmin' ||
+        data.data.role === 'manager'
+      ) {
+        navigate('/');
+      }
     } catch (err) {
       console.log(err);
       setIsPending(false);
       toast.error('من فضلك تأكد من اسم المستخدم او كلمة المرور ');
-      // toast.error(err?.response?.data?.message);
-      // < ToastContainer />
-      // console.log('response', err?.response?.data?.message);
-    } finally {
-      if (
-        user?.role == 'admin' ||
-        user?.role == 'godAdmin' ||
-        user?.role == 'manager'
-      ) {
-        navigate('/dash/dashboard');
-      }
     }
   };
+
   return (
     <>
       {isPending && <div className="loading"></div>}
       <div className="login-page">
-        <div className="Container pt-5 login">
-          <div className="container text-end d-flex flex-column justify-content-center m-auto body-card">
-            <div className="shadow-lg p-3 mb-5 bg-body rounded">
-              <h3 className="text-center pt-3 fs-2 fw-bold">تسجيل الدخول </h3>
-              <form className="pb-5 pt-2" onSubmit={handelSubmit}>
+        <div className="container pt-5 login">
+          <div className="card-container">
+            <div className="p-3 mb-5 bg-body-dark p-5 rounded login-card">
+              <h3 className="text-center text-light pt-3 fs-2 fw-bold">
+                تسجيل الدخول
+              </h3>
+              <form className="p-5" onSubmit={handelSubmit}>
                 <div className="mb-3">
                   <label
                     htmlFor="exampleInputuserName1"
-                    className="form-label fs-4 fw-bold"
+                    className="form-label d-block ms-auto fs-4 fw-bold"
                   >
                     اسم المستخدم
                   </label>
@@ -106,7 +93,9 @@ const Login = () => {
                 </div>
                 <div className="d-grid gap-2">
                   <ToastContainer />
-                  <button>تسجيل الدخول</button>
+                  <button type="submit" className="btn btn-primary">
+                    تسجيل الدخول
+                  </button>
                 </div>
               </form>
             </div>

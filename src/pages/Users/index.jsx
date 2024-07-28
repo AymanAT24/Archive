@@ -1,7 +1,7 @@
 import { Header } from '@/layout';
 import axios from '@/api/axios';
 import React, { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Modal from 'react-modal';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast, ToastContainer } from 'react-toastify';
@@ -11,11 +11,19 @@ const Users = () => {
   const { username } = useParams();
   const [data, setData] = useState([]); // Ensure initial state is an array
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNewUserModalOpen, setIsNewUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
+  const [newUsername, setNewUsername] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
 
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
     const token = localStorage.getItem('userToken');
     axios
       .get('user/getAllUsers', {
@@ -38,7 +46,7 @@ const Users = () => {
         console.log(err);
         toast.error('حدث خطأ');
       });
-  }, []);
+  };
 
   const openModal = (user) => {
     setSelectedUser(user);
@@ -48,6 +56,17 @@ const Users = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedUser(null);
+  };
+
+  const openNewUserModal = () => {
+    setIsNewUserModalOpen(true);
+  };
+
+  const closeNewUserModal = () => {
+    setIsNewUserModalOpen(false);
+    setNewUsername('');
+    setNewPassword('');
+    setNewPasswordConfirm('');
   };
 
   const handlePasswordChange = () => {
@@ -71,10 +90,44 @@ const Users = () => {
       .then((res) => {
         toast.success('Password updated successfully');
         closeModal();
+        fetchData();
       })
       .catch((err) => {
         console.log(err);
         toast.error('Failed to update password');
+      });
+  };
+
+  const handleCreateUser = () => {
+    if (newPassword !== newPasswordConfirm) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
+    const token = localStorage.getItem('userToken');
+    axios
+      .post(
+        'user/createUser',
+        {
+          username: newUsername,
+          password: newPassword,
+          passwordConfirm: newPasswordConfirm,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        toast.success('User created successfully');
+        fetchData();
+        closeNewUserModal();
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error('Failed to create user');
       });
   };
 
@@ -89,7 +142,7 @@ const Users = () => {
       })
       .then((res) => {
         toast.success('User deleted successfully');
-        setData((prevData) => prevData.filter((user) => user._id !== userId));
+        fetchData();
       })
       .catch((err) => {
         console.log(err);
@@ -98,21 +151,20 @@ const Users = () => {
   };
 
   return (
-    <div className="container">
+    <div className="container bg-dark text-center">
       <Header />
       <ToastContainer />
-      <h1 className="text-center my-5 text-dark fw-bolder shadow p-3 mb-5 rounded main-color">
+      <h1 className="text-center my-5 text-light fw-bolder shadow p-3 mb-5 rounded main-color">
         جميع المستخدمين
       </h1>
-      <Link to={'/addnewuser'}>
-        <button
-          type="button"
-          className="btn fw-bolder p-3 d-block ms-auto btn-primary"
-        >
-          + اضافة مستخدم جديد
-        </button>
-      </Link>
-      <table className="table text-center table-hover text-dark p-5 my-5">
+      <button
+        type="button"
+        onClick={openNewUserModal}
+        className="btn fw-bolder p-3 d-block ms-auto btn-primary"
+      >
+        + اضافة مستخدم جديد
+      </button>
+      <table className="table table-dark text-center table-hover text-light p-5 my-5">
         <thead>
           <tr>
             <th className="p-4">#</th>
@@ -130,13 +182,13 @@ const Users = () => {
               <td className="p-3">
                 <button
                   onClick={() => openModal(item)}
-                  className="btn btn-outline-success mx-2 px-4"
+                  className="btn btn-outline-success bt-c mx-2 px-4"
                 >
                   تعديل المستخدم
                 </button>
                 <button
                   onClick={() => handleDelete(item._id)}
-                  className="btn btn-outline-danger mx-2 px-4"
+                  className="btn bt-d btn-outline-danger mx-2 px-4"
                 >
                   حذف المستخدم
                 </button>
@@ -184,6 +236,62 @@ const Users = () => {
             </button>
           </form>
           <button onClick={closeModal} className="btn btn-secondary mt-3">
+            إلغاء
+          </button>
+        </Modal>
+      )}
+      {isNewUserModalOpen && (
+        <Modal
+          isOpen={isNewUserModalOpen}
+          onRequestClose={closeNewUserModal}
+          contentLabel="Create New User"
+          className="dark-mode-modal text-end container p-5"
+          overlayClassName="dark-mode-overlay"
+        >
+          <h2>اضافة مستخدم جديد</h2>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="form-group">
+              <label htmlFor="newUsername">اسم المستخدم</label>
+              <input
+                type="text"
+                id="newUsername"
+                value={newUsername}
+                onChange={(e) => setNewUsername(e.target.value)}
+                className="form-control"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="newPassword">كلمة المرور</label>
+              <input
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="form-control"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="newPasswordConfirm">تأكيد كلمة المرور</label>
+              <input
+                type="password"
+                id="newPasswordConfirm"
+                value={newPasswordConfirm}
+                onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                className="form-control"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleCreateUser}
+              className="btn btn-primary mt-3"
+            >
+              انشاء مستخدم
+            </button>
+          </form>
+          <button
+            onClick={closeNewUserModal}
+            className="btn btn-secondary mt-3"
+          >
             إلغاء
           </button>
         </Modal>

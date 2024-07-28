@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import axios from '@/api/axios';
+import './AddNewFax.css';
 
 const AddNewFax = () => {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ const AddNewFax = () => {
   const [about, setAbout] = useState('');
   const [files, setFiles] = useState([]);
   const [fileUploadError, setFileUploadError] = useState('');
+  const [isDestinationSelected, setIsDestinationSelected] = useState(false);
 
   const token = localStorage.getItem('userToken');
 
@@ -34,27 +36,12 @@ const AddNewFax = () => {
       .catch((err) => {
         console.log(err);
       });
-
-    axios
-      .get(`faxes/my-faxes`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        const userFaxesCount = res?.data.data.length;
-        setFaxNumber(userFaxesCount + 1);
-      })
-      .catch((err) => {
-        console.log(err);
-        setFaxNumber(1);
-      });
   }, [token]);
 
   const handleDestinationChange = (e) => {
     const destinationId = e.target.value;
     setSelectedDestination(destinationId);
+    setIsDestinationSelected(!!destinationId); // Set selection state based on value
 
     axios
       .get(`subjects/${destinationId}`, {
@@ -147,7 +134,7 @@ const AddNewFax = () => {
         `faxes/add`,
         {
           comment,
-          faxNumber, // Fax number is now set automatically
+          faxNumber,
           faxType,
           files: fileUploadPaths,
           about,
@@ -172,9 +159,9 @@ const AddNewFax = () => {
 
   return (
     <div className="dashboard d-flex flex-row">
-      <div className="container text-center">
-        <div className="shadow-none p-3 mt-3 mb-5 bg-body rounded main-title">
-          <h2 className="fs-1 fw-bold text-dark shadow p-3 mb-5 bg-body-tertiary rounded">
+      <div className="container bg-dark text-center">
+        <div className="shadow-none p-3 mt-3 mb-5 bg-body-dark rounded main-title">
+          <h2 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded">
             اضافة فاكس جديد
           </h2>
         </div>
@@ -184,6 +171,7 @@ const AddNewFax = () => {
             className="form-select ms-3"
             aria-label="Default select example"
             onChange={handleDestinationChange}
+            onBlur={() => setIsDestinationSelected(!!selectedDestination)}
             value={selectedDestination}
           >
             <option value="">اسم الجهة</option>
@@ -198,7 +186,7 @@ const AddNewFax = () => {
             aria-label="Default select example"
             onChange={handleSubjectChange}
             value={selectedSubject}
-            disabled={!selectedDestination}
+            disabled={!isDestinationSelected}
           >
             <option value="">الموضوع</option>
             {subjects.map((subject) => (
@@ -212,7 +200,7 @@ const AddNewFax = () => {
             aria-label="Default select example"
             onChange={(e) => setAbout(e.target.value)}
             value={about}
-            disabled={!selectedSubject}
+            disabled={!isDestinationSelected || !selectedSubject}
           >
             <option value="">بشان</option>
             {abouts.map((aboutItem) => (
@@ -240,7 +228,6 @@ const AddNewFax = () => {
               value={faxNumber}
               onChange={(e) => setFaxNumber(e.target.value)}
               placeholder="اضف رقم الفاكس*"
-              disabled // Disable manual input for fax number
             />
           </div>
           <div className="col-12 text-end fw-bold fs-5 mb-4">

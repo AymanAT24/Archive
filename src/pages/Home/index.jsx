@@ -4,6 +4,7 @@ import axios from '@/api/axios';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { Header } from '@/layout';
+
 const Home = () => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
@@ -60,9 +61,9 @@ const Home = () => {
 
   return (
     <>
-      <div className="container">
+      <div className="container shadow-none p-3 mt-3 mb-5 bg-body-dark rounded main-title">
         <Header />
-        <h1 className="text-center my-5 text-dark fw-bolder shadow p-3 mb-5 rounded main-color ">
+        <h1 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded text-center">
           جميع الفكسات
         </h1>
         <Link to={'/addNewFax'}>
@@ -79,13 +80,15 @@ const Home = () => {
           placeholder="أكتب للبحث ..."
           onChange={(e) => setSearch(e.target.value)}
         />
-        <table className="table text-center table-hover text-dark  p-5 my-5">
+        <table className="table table-dark text-center table-hover text-light p-5 my-5">
           <thead>
             <tr>
               <th className="p-4">#</th>
               <th className="p-4">الجهة</th>
-              <th className="p-4"> رقم الفاكس</th>
-              <th className="p-4"> نوع الفاكس</th>
+              <th className="p-4">الموضوع</th>
+              <th className="p-4">بشأن</th>
+              <th className="p-4">كود الفاكس</th>
+              <th className="p-4">نوع الفاكس</th>
               <th className="p-4">التاريخ</th>
               <th className="p-4">الاحداث</th>
             </tr>
@@ -94,7 +97,11 @@ const Home = () => {
             {filteredData?.map((item, index) => (
               <tr key={item._id}>
                 <td className="p-3">{index + 1}</td>
-                <td className="p-3">{item?.user?.username}</td>
+                <td className="p-3">
+                  {item?.about?.subject?.destination?.name}
+                </td>
+                <td className="p-3">{item?.about?.subject?.name}</td>
+                <td className="p-3">{item?.about?.name}</td>
                 <td className="p-3">{item?.faxNumber}</td>
                 <td className="p-3">{item?.faxType}</td>
                 <td className="p-3">{item?.date.slice(0, 10)}</td>

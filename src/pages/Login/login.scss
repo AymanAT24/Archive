@@ -1,21 +1,53 @@
-.login-page {
-  .login {
-    .body-card {
-      width: 50%;
-      padding-top: 1rem;
-      h3 {
-        color: var(--main-color);
-      }
-    }
-  }
+body {
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+  transition: all 0.3s ease-in-out !important;
 }
-// @media (max-width: 992px) {
-//  .login-page .login .body-card{
-//   width: 50%;
-//  }
-// }
-@media (max-width: 557px) {
- .login-page .login .body-card{
-  width: 100%;
- }
+
+.login-page {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  height: 100vh !important;
+  background-color: var(--background-color) !important;
+}
+
+.card-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+.login-card {
+  width: 100% !important;
+  max-width: 500px !important;
+  padding: 40px !important;
+  background-color: var(--card-background-color) !important;
+  box-shadow: 0 4px 21px #265987 !important;
+  border-radius: 8px !important;
+}
+
+.btn-primary {
+  background-color: #265987 !important;
+  border-color: #265987 !important;
+}
+
+.form-label {
+  text-align: right !important;
+  display: block !important;
+  direction: rtl !important;
+}
+
+:root {
+  --background-color: #121212 !important;
+  --text-color: #ffffff !important;
+  --card-background-color: #1e1e1e !important;
+}
+
+/* If you want to support light theme as well, you can define it like this and switch the theme using JavaScript if needed */
+[data-theme='light'] {
+  --background-color: #ffffff !important;
+  --text-color: #000000 !important;
+  --card-background-color: #f8f9fa !important;
 }

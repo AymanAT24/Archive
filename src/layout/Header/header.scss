@@ -1,61 +1,57 @@
- .header {
-   .swiper {
-     width: 100%;
-     height: 100vh;
-   }
+/* header.scss */
 
-   .swiper-slide {
-     text-align: center;
-     font-size: 18px;
-     background: #fff;
-     /* Center slide text vertically */
-     display: flex;
-     justify-content: center;
-     align-items: center;
-   }
+.header {
+  .navbar {
+    background-color: #1e1e1e !important;
+  }
 
-   .swiper-slide img {
-     display: block;
-     width: -webkit-fill-available;
-     height: 100vh;
-     // object-fit: cover;
-   }
+  .nav-link {
+    color: #ffffff !important;
+    font-weight: bold !important;
 
-   .image {
-     background-size: cover;
-     width: -webkit-fill-available;
-     height: 100vh;
-     margin: 0 0 0 -2rem;
-   }
- }
+    &.active-page {
+      color: #ffd700 !important; // Highlight color for the active page
+      position: relative;
 
- @media (max-width: 320px) {
-   .swiper-slide img {
-     width: 20rem !important;
-     height: 100vh !important;
-   }
- }
+      &:after {
+        content: 'أنت هنا';
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #ffd700;
+        color: #1e1e1e;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
 
+      &:hover:after {
+        opacity: 1;
+      }
+    }
+  }
 
- // .header {
- //   .home-image {
- //     width: 100%;
- //     height: auto;
- //     // position: center;
- //     object-fit: cover;
- //     display: block;
- //   }
- // }
-//  span.carousel-control-next-icon,
-//  span.carousel-control-prev-icon {
-//    border: 2px solid var(--bs-black);
-//    border-radius: 50%;
-//    height: 41px;
-//  }
+  .btn-logout {
+    background-color: #3d278f !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 10px 20px !important;
+  }
 
+  .btn-logout:hover {
+    background-color: #2d1e6c !important;
+  }
 
- span.carousel-control-next-icon:hover,
- span.carousel-control-prev-icon:hover {
+  .ms-auto {
+    margin-left: auto !important;
+  }
 
-   background-color: #052c65;
- }
+  .navbar-nav {
+    .nav-item {
+      margin-left: 10px !important;
+    }
+  }
+}

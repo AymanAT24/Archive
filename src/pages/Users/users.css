@@ -31,12 +31,12 @@
 }
 
 .dark-mode-modal .btn-primary {
-  background-color: #0062cc;
+  background-color: #3d278f !important;
   border-color: #0056b3;
 }
 
 .dark-mode-modal .btn-secondary {
-  background-color: #444;
+  background-color: #3d278f !important;
   border-color: #333;
 }
 
