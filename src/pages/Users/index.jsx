@@ -9,15 +9,18 @@ import './users.css';
 
 const Users = () => {
   const { username } = useParams();
-  const [data, setData] = useState([]); // Ensure initial state is an array
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [data, setData] = useState([]);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isNewUserModalOpen, setIsNewUserModalOpen] = useState(false);
+  const [isEditUserModalOpen, setIsEditUserModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+  const [editUsername, setEditUsername] = useState('');
+  const [editRole, setEditRole] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -33,7 +36,6 @@ const Users = () => {
         },
       })
       .then((res) => {
-        // Check the structure of res.data and update accordingly
         if (Array.isArray(res.data)) {
           setData(res.data);
         } else if (Array.isArray(res.data.data)) {
@@ -48,13 +50,13 @@ const Users = () => {
       });
   };
 
-  const openModal = (user) => {
+  const openPasswordModal = (user) => {
     setSelectedUser(user);
-    setIsModalOpen(true);
+    setIsPasswordModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const closePasswordModal = () => {
+    setIsPasswordModalOpen(false);
     setSelectedUser(null);
   };
 
@@ -69,6 +71,20 @@ const Users = () => {
     setNewPasswordConfirm('');
   };
 
+  const openEditUserModal = (user) => {
+    setSelectedUser(user);
+    setEditUsername(user.username);
+    setEditRole(user.role);
+    setIsEditUserModalOpen(true);
+  };
+
+  const closeEditUserModal = () => {
+    setIsEditUserModalOpen(false);
+    setSelectedUser(null);
+    setEditUsername('');
+    setEditRole('');
+  };
+
   const handlePasswordChange = () => {
     if (password !== passwordConfirm) {
       toast.error('Passwords do not match');
@@ -77,8 +93,8 @@ const Users = () => {
 
     const token = localStorage.getItem('userToken');
     axios
-      .put(
-        `user/updatePassword/${selectedUser._id}`,
+      .patch(
+        `user/resetPassword/${selectedUser._id}`,
         { password, passwordConfirm },
         {
           headers: {
@@ -89,7 +105,7 @@ const Users = () => {
       )
       .then((res) => {
         toast.success('Password updated successfully');
-        closeModal();
+        closePasswordModal();
         fetchData();
       })
       .catch((err) => {
@@ -128,6 +144,33 @@ const Users = () => {
       .catch((err) => {
         console.log(err);
         toast.error('Failed to create user');
+      });
+  };
+
+  const handleEditUser = () => {
+    const token = localStorage.getItem('userToken');
+    axios
+      .patch(
+        `user/updateUser/${selectedUser._id}`,
+        {
+          username: editUsername,
+          role: editRole,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        toast.success('تم تعديل الحساب');
+        closeEditUserModal();
+        fetchData();
+      })
+      .catch((err) => {
+        console.log(err.response.data);
+        toast.error('Failed to update user');
       });
   };
 
@@ -181,8 +224,14 @@ const Users = () => {
               <td className="p-3">{item.role}</td>
               <td className="p-3">
                 <button
-                  onClick={() => openModal(item)}
+                  onClick={() => openPasswordModal(item)}
                   className="btn btn-outline-success bt-c mx-2 px-4"
+                >
+                  تعديل كلمة السر
+                </button>
+                <button
+                  onClick={() => openEditUserModal(item)}
+                  className="btn btn-outline-info bt-c mx-2 px-4"
                 >
                   تعديل المستخدم
                 </button>
@@ -197,10 +246,10 @@ const Users = () => {
           ))}
         </tbody>
       </table>
-      {isModalOpen && (
+      {isPasswordModalOpen && (
         <Modal
-          isOpen={isModalOpen}
-          onRequestClose={closeModal}
+          isOpen={isPasswordModalOpen}
+          onRequestClose={closePasswordModal}
           contentLabel="Edit User Password"
           className="dark-mode-modal text-end container p-5"
           overlayClassName="dark-mode-overlay"
@@ -235,7 +284,10 @@ const Users = () => {
               حفظ التعديلات
             </button>
           </form>
-          <button onClick={closeModal} className="btn btn-secondary mt-3">
+          <button
+            onClick={closePasswordModal}
+            className="btn btn-secondary mt-3"
+          >
             إلغاء
           </button>
         </Modal>
@@ -248,7 +300,7 @@ const Users = () => {
           className="dark-mode-modal text-end container p-5"
           overlayClassName="dark-mode-overlay"
         >
-          <h2>اضافة مستخدم جديد</h2>
+          <h2>إنشاء مستخدم جديد</h2>
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="form-group">
               <label htmlFor="newUsername">اسم المستخدم</label>
@@ -285,11 +337,59 @@ const Users = () => {
               onClick={handleCreateUser}
               className="btn btn-primary mt-3"
             >
-              انشاء مستخدم
+              إنشاء مستخدم
             </button>
           </form>
           <button
             onClick={closeNewUserModal}
+            className="btn btn-secondary mt-3"
+          >
+            إلغاء
+          </button>
+        </Modal>
+      )}
+      {isEditUserModalOpen && (
+        <Modal
+          isOpen={isEditUserModalOpen}
+          onRequestClose={closeEditUserModal}
+          contentLabel="Edit User"
+          className="dark-mode-modal text-end container p-5"
+          overlayClassName="dark-mode-overlay"
+        >
+          <h2>تعديل المستخدم {selectedUser?.username}</h2>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="form-group">
+              <label htmlFor="editUsername">اسم المستخدم</label>
+              <input
+                type="text"
+                id="editUsername"
+                value={editUsername}
+                onChange={(e) => setEditUsername(e.target.value)}
+                className="form-control"
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="editRole">الدور</label>
+              <select
+                id="editRole"
+                value={editRole}
+                onChange={(e) => setEditRole(e.target.value)}
+                className="form-control"
+              >
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <button
+              type="button"
+              onClick={handleEditUser}
+              className="btn btn-primary mt-3"
+            >
+              حفظ التعديلات
+            </button>
+          </form>
+          <button
+            onClick={closeEditUserModal}
             className="btn btn-secondary mt-3"
           >
             إلغاء

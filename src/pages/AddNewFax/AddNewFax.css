@@ -23,20 +23,20 @@ body {
 
 h2 {
   color: #ff9800 !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 8px #265987 !important;
   padding: 15px !important;
   border-radius: 8px !important;
   background-color: #1e1e1e !important;
 }
 
 .btn {
-  background-color: #333333 !important;
+  background-color: #265987 !important;
   color: #ffffff !important;
   border: none !important;
   padding: 10px 20px !important;
   margin: 5px !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 8px #265987 !important;
   transition: background-color 0.3s ease !important;
 }
 
@@ -98,17 +98,17 @@ input[type='file']::file-selector-button:hover {
   color: #ffffff !important;
   padding: 20px !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 8px #265987 !important;
 }
 
 select {
-  background-color: #2c2c2c !important;
+  background-color: #265987 !important;
   color: #ffffff !important;
   border: 1px solid #444444 !important;
   padding: 10px !important;
   margin: 10px 0 !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 8px #265987ab !important;
 }
 
 select:disabled {
@@ -120,7 +120,7 @@ form {
   color: #ffffff !important;
   padding: 20px !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 8px #265987ab !important;
 }
 
 .text-danger {
@@ -130,20 +130,20 @@ form {
 button.btn-primary,
 button.btn-outline-primary,
 button.btn-danger {
-  background-color: #3d278f !important;
+  background-color: #265987 !important;
   color: #ffffff !important;
   border: none !important;
   padding: 10px 20px !important;
   margin: 5px !important;
   border-radius: 8px !important;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 4px 8px #265987ab !important;
   transition: background-color 0.3s ease !important;
 }
 
 button.btn-primary:hover,
 button.btn-outline-primary:hover,
 button.btn-danger:hover {
-  background-color: #555555 !important;
+  background-color: #265987ab !important;
 }
 
 button:disabled {

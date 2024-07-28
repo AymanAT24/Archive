@@ -57,8 +57,8 @@ const Login = () => {
               <h3 className="text-center text-light pt-3 fs-2 fw-bold">
                 تسجيل الدخول
               </h3>
-              <form className="p-5" onSubmit={handelSubmit}>
-                <div className="mb-3">
+              <form className="p-5 shadow-none" onSubmit={handelSubmit}>
+                <div className="mb-4">
                   <label
                     htmlFor="exampleInputuserName1"
                     className="form-label d-block ms-auto fs-4 fw-bold"
@@ -75,7 +75,7 @@ const Login = () => {
                     onChange={(e) => setuserName(e.target.value)}
                   />
                 </div>
-                <div className="mb-3">
+                <div className="mb-4">
                   <label
                     htmlFor="exampleInputPassword1"
                     className="form-label fs-4 fw-bold"

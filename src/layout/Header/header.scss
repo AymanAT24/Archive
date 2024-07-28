@@ -10,7 +10,7 @@
     font-weight: bold !important;
 
     &.active-page {
-      color: #ffd700 !important; // Highlight color for the active page
+      color: #397ab3 !important; // Highlight color for the active page
       position: relative;
 
       &:after {
@@ -19,7 +19,7 @@
         bottom: -20px;
         left: 50%;
         transform: translateX(-50%);
-        background-color: #ffd700;
+        background-color: #397ab3;
         color: #1e1e1e;
         padding: 2px 5px;
         border-radius: 3px;
@@ -35,14 +35,14 @@
   }
 
   .btn-logout {
-    background-color: #3d278f !important;
+    background-color: #265987 !important;
     border: none !important;
     cursor: pointer !important;
     padding: 10px 20px !important;
   }
 
   .btn-logout:hover {
-    background-color: #2d1e6c !important;
+    background-color: #265987ab !important;
   }
 
   .ms-auto {

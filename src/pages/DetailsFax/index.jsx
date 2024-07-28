@@ -52,10 +52,6 @@ const DetailsFax = () => {
     setCurrentFile(null);
   };
 
-  const getFileName = (fileUrl) => {
-    return fileUrl.split('/').pop();
-  };
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -66,7 +62,7 @@ const DetailsFax = () => {
 
   return (
     <div className="details-fax-container">
-      <h2 className="text-light text-center fw-bolder">ملفات الفاكس</h2>
+      <h2 className="text-light text-center fw-bolder">ملحقات الفاكس</h2>
       <div className="fax-files">
         {fax.files.length > 0 ? (
           <div className="files-scroll-container">
@@ -93,10 +89,11 @@ const DetailsFax = () => {
                 </div>
                 <a
                   href={`http://${file}`}
-                  download={getFileName(file)}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="download-button"
                 >
-                  مراجعة {index + 1}
+                  مراجعة الملف {index + 1}
                 </a>
               </div>
             ))}

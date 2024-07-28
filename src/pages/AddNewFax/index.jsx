@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import axios from '@/api/axios';
 import './AddNewFax.css';
+import { Header } from '@/layout';
 
 const AddNewFax = () => {
   const navigate = useNavigate();
@@ -160,6 +161,7 @@ const AddNewFax = () => {
   return (
     <div className="dashboard d-flex flex-row">
       <div className="container bg-dark text-center">
+        <Header />
         <div className="shadow-none p-3 mt-3 mb-5 bg-body-dark rounded main-title">
           <h2 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded">
             اضافة فاكس جديد

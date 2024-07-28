@@ -1,21 +1,56 @@
 import './header.scss';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import axios from '@/api/axios';
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem('userToken');
-    setIsLoggedIn(!!token); // Check if the user is logged in
+    setIsLoggedIn(!!token);
+
+    const fetchUserRole = async () => {
+      try {
+        const response = await axios.get('/user/me', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setUserRole(response.data.user.role);
+      } catch (error) {
+        console.error('Failed to fetch user role:', error);
+      }
+    };
+
+    if (token) {
+      fetchUserRole();
+    }
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('userToken'); // Remove the token from local storage
-    setIsLoggedIn(false); // Update the state to reflect the logout
-    navigate('/auth/login'); // Redirect to the login page
+  const handleLogout = async () => {
+    const token = localStorage.getItem('userToken');
+
+    try {
+      await fetch('/user/logout', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      localStorage.removeItem('userToken');
+      setIsLoggedIn(false);
+      toast.success('تم تسجيل الخروج بنجاح');
+      navigate('/auth/login');
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
   };
 
   return (
@@ -35,19 +70,21 @@ const Header = () => {
                   الصفحة الرئيسية
                 </Link>
               </li>
-              <li className="nav-item">
-                <Link
-                  to={'/users'}
-                  className={`nav-link ${
-                    location.pathname === '/users' ? 'active-page' : ''
-                  } text-light fw-bolder`}
-                  aria-current="page"
-                >
-                  المستخدمين
-                </Link>
-              </li>
+              {userRole !== 'user' && (
+                <li className="nav-item">
+                  <Link
+                    to={'/users'}
+                    className={`nav-link ${
+                      location.pathname === '/users' ? 'active-page' : ''
+                    } text-light fw-bolder`}
+                    aria-current="page"
+                  >
+                    المستخدمين
+                  </Link>
+                </li>
+              )}
             </ul>
-            {isLoggedIn && (
+            {isLoggedIn ? (
               <ul className="navbar-nav p-3 mb-2 mb-lg-0">
                 <li className="nav-item ms-auto">
                   <button
@@ -56,6 +93,16 @@ const Header = () => {
                   >
                     تسجيل الخروج
                   </button>
+                </li>
+              </ul>
+            ) : (
+              <ul className="navbar-nav p-3 mb-2 mb-lg-0">
+                <li className="nav-item ms-auto">
+                  <Link to={'/auth/login'}>
+                    <button className="nav-link active text-light fw-bolder btn btn-logout">
+                      تسجيل الدخول
+                    </button>
+                  </Link>
                 </li>
               </ul>
             )}

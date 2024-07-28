@@ -25,7 +25,7 @@ const Home = () => {
       })
       .catch((err) => {
         console.log(err);
-        toast.error('حدث خطا ');
+        toast.error('حدث خطأ ');
       });
   }, []);
 
@@ -56,7 +56,17 @@ const Home = () => {
   };
 
   const filteredData = data?.data?.filter((item) =>
-    item?.user?.username.toLowerCase().includes(search.toLowerCase())
+    [
+      item?.about?.subject?.destination?.name,
+      item?.about?.subject?.name,
+      item?.about?.name,
+      item?.faxNumber,
+      item?.faxType,
+      item?.date,
+    ]
+      .join(' ')
+      .toLowerCase()
+      .includes(search.toLowerCase())
   );
 
   return (
