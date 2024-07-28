@@ -87,7 +87,7 @@ const Users = () => {
 
   const handlePasswordChange = () => {
     if (password !== passwordConfirm) {
-      toast.error('Passwords do not match');
+      toast.error('كلمة المرور غير متشابهه');
       return;
     }
 
@@ -104,7 +104,7 @@ const Users = () => {
         }
       )
       .then((res) => {
-        toast.success('Password updated successfully');
+        toast.success('تم تعديل الرقم السري بنجاح');
         closePasswordModal();
         fetchData();
       })
@@ -116,7 +116,7 @@ const Users = () => {
 
   const handleCreateUser = () => {
     if (newPassword !== newPasswordConfirm) {
-      toast.error('Passwords do not match');
+      toast.error('كلمة المرور غير متشابهه');
       return;
     }
 
@@ -137,13 +137,13 @@ const Users = () => {
         }
       )
       .then((res) => {
-        toast.success('User created successfully');
+        toast.success('تم إنشاء المستخدم بنجاح');
         fetchData();
         closeNewUserModal();
       })
       .catch((err) => {
         console.log(err);
-        toast.error('Failed to create user');
+        toast.error('Password At least has 8 characters');
       });
   };
 
@@ -175,22 +175,47 @@ const Users = () => {
   };
 
   const handleDelete = (userId) => {
-    const token = localStorage.getItem('userToken');
-    axios
-      .delete(`user/deleteUser/${userId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        toast.success('User deleted successfully');
-        fetchData();
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error('Failed to delete user');
-      });
+    const confirmDelete = () => {
+      const token = localStorage.getItem('userToken');
+      axios
+        .delete(`user/deleteUser/${userId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          toast.success('تم حذف المستخدم بنجاح');
+          fetchData();
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error('Failed to delete user');
+        });
+    };
+
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p>هل أنت متأكد أنك تريد حذف هذا المستخدم؟</p>
+          <button
+            className="btn btn-danger mx-2"
+            onClick={() => {
+              confirmDelete();
+              closeToast();
+            }}
+          >
+            تأكيد
+          </button>
+          <button className="btn btn-secondary mx-2" onClick={closeToast}>
+            إلغاء
+          </button>
+        </div>
+      ),
+      {
+        autoClose: false,
+      }
+    );
   };
 
   return (

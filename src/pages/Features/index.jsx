@@ -22,12 +22,8 @@ const Features = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => {
-        setDestinations(res.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      .then((res) => setDestinations(res.data.data))
+      .catch((err) => console.log(err));
   }, [token]);
 
   const handleAddNewDestination = () => {
@@ -46,9 +42,7 @@ const Features = () => {
         setDestinations((prev) => [...prev, response.data.data]);
         setNewDestination('');
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => console.log(error));
   };
 
   const handleAddNewSubject = () => {
@@ -67,9 +61,7 @@ const Features = () => {
         setSubjects((prev) => [...prev, response.data.data]);
         setNewSubject('');
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => console.log(error));
   };
 
   const handleAddNewAbout = () => {
@@ -88,9 +80,7 @@ const Features = () => {
         setAbouts((prev) => [...prev, response.data.data]);
         setNewAbout('');
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -101,7 +91,6 @@ const Features = () => {
           اضافة خصائص
         </h2>
       </div>
-
       <div className="add-new-entry">
         <div className="d-flex flex-column mb-4">
           <input
