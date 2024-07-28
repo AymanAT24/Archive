@@ -1,46 +1,51 @@
 import './detailsFax.scss';
 import React, { useEffect, useState } from 'react';
 import axios from '@/api/axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import Modal from 'react-modal';
 
 Modal.setAppElement('#root');
 
 const DetailsFax = () => {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
-  const [fax, setFax] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [fax, setFax] = useState(location.state?.fax || null);
+  const [loading, setLoading] = useState(!fax);
   const [error, setError] = useState(null);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [currentFile, setCurrentFile] = useState(null);
   const token = localStorage.getItem('userToken');
 
   useEffect(() => {
-    const fetchFaxDetails = async () => {
-      try {
-        const response = await axios.get(`/faxes/${id}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setFax(response.data.fax);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          setError('Unauthorized. Please log in again.');
-          navigate('/login');
-        } else if (error.response && error.response.status === 500) {
-          setError('Internal server error. Please try again later.');
-        } else {
-          setError('Failed to fetch fax details.');
+    if (!fax) {
+      const fetchFaxDetails = async () => {
+        try {
+          const response = await axios.get(`/faxes/${id}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          setFax(response.data.fax);
+        } catch (error) {
+          if (error.response && error.response.status === 401) {
+            setError('Unauthorized. Please log in again.');
+            navigate('/auth/login');
+          } else if (error.response && error.response.status === 500) {
+            setError('Internal server error. Please try again later.');
+          } else {
+            setError('Failed to fetch fax details.');
+          }
+        } finally {
+          setLoading(false);
         }
-      } finally {
-        setLoading(false);
-      }
-    };
+      };
 
-    fetchFaxDetails();
-  }, [id, token, navigate]);
+      fetchFaxDetails();
+    } else {
+      setLoading(false);
+    }
+  }, [id, fax, token, navigate]);
 
   const openModal = (file) => {
     setCurrentFile(file);
@@ -64,17 +69,17 @@ const DetailsFax = () => {
     <div className="details-fax-container">
       <h2 className="text-light text-center fw-bolder">ملحقات الفاكس</h2>
       <div className="fax-files">
-        {fax.files.length > 0 ? (
+        {fax?.files?.length > 0 ? (
           <div className="files-scroll-container">
-            {fax.files.map((file, index) => (
+            {fax?.files?.map((file, index) => (
               <div key={index} className="fax-file-item">
                 <div
                   className="fax-file-preview"
                   onClick={() => openModal(file)}
                 >
-                  {file.endsWith('.jpg') ||
-                  file.endsWith('.jpeg') ||
-                  file.endsWith('.png') ? (
+                  {file?.endsWith('.jpg') ||
+                  file?.endsWith('.jpeg') ||
+                  file?.endsWith('.png') ? (
                     <img
                       src={`http://${file}`}
                       alt={`fax-file-${index + 1}`}
@@ -114,15 +119,15 @@ const DetailsFax = () => {
         </button>
         {currentFile && (
           <div className="file-preview-container">
-            {currentFile.endsWith('.jpg') ||
-            currentFile.endsWith('.jpeg') ||
-            currentFile.endsWith('.png') ? (
+            {currentFile?.endsWith('.jpg') ||
+            currentFile?.endsWith('.jpeg') ||
+            currentFile?.endsWith('.png') ? (
               <img
                 src={`http://${currentFile}`}
                 alt="File preview"
                 className="file-preview-image"
               />
-            ) : currentFile.endsWith('.pdf') ? (
+            ) : currentFile?.endsWith('.pdf') ? (
               <embed
                 src={`http://${currentFile}`}
                 type="application/pdf"

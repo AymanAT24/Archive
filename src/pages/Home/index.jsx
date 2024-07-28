@@ -2,19 +2,19 @@ import { useAuth } from '@/context/Auth';
 import { useState, useEffect } from 'react';
 import axios from '@/api/axios';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
-import { Header } from '@/layout';
+import { Link, useNavigate } from 'react-router-dom';
+import Header from '@/layout/Header';
 
 const Home = () => {
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const [search, setSearch] = useState('');
   const [data, setData] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     const url = user.role === 'user' ? 'faxes/my-faxes' : 'faxes';
-
     axios
       .get(url, {
         headers: {
@@ -57,6 +57,26 @@ const Home = () => {
       });
   };
 
+  const handleViewDetails = (id) => {
+    const token = localStorage.getItem('userToken');
+    const url =
+      user.role === 'user' ? `faxes/getOneUserFax/${id}` : `faxes/${id}`;
+    axios
+      .get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        navigate(`/details/${id}`, { state: { fax: res.data.fax } });
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error('حدث خطأ أثناء جلب البيانات');
+      });
+  };
+
   const filteredData = data?.data?.filter((item) =>
     [
       item?.about?.subject?.destination?.name,
@@ -78,7 +98,7 @@ const Home = () => {
         <h1 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded text-center">
           جميع الفكسات
         </h1>
-        {user.role === 'user' && (
+        {user.role === 'admin' && (
           <Link to={'/addNewFax'}>
             <button
               type="button"
@@ -88,6 +108,28 @@ const Home = () => {
             </button>
           </Link>
         )}
+        <div className="d-flex">
+          {/* {user.role === 'admin' && (
+            <Link to={'/features'}>
+              <button
+                type="button"
+                className="btn my-5 text-start d-block p-3 btn-secondary"
+              >
+                الخصائص
+              </button>
+            </Link>
+          )} */}
+          {user.role === 'user' && (
+            <Link to={'/addNewFax'}>
+              <button
+                type="button"
+                className="btn my-5 text-start d-block p-3 btn-secondary"
+              >
+                اضافة فاكس جديد
+              </button>
+            </Link>
+          )}
+        </div>
         <input
           className="form-control"
           id="search"
@@ -125,17 +167,20 @@ const Home = () => {
                       تعديل
                     </button>
                   </Link>
-                  <Link to={`/details/${item._id}`} state={{ item }}>
-                    <button className="btn btn-outline-info mx-2 px-4">
-                      ملحقات
-                    </button>
-                  </Link>
                   <button
-                    onClick={() => handleDelete(item._id)}
-                    className="btn btn-outline-danger mx-2 px-4"
+                    onClick={() => handleViewDetails(item._id)}
+                    className="btn btn-outline-info mx-2 px-4"
                   >
-                    حذف
+                    ملحقات
                   </button>
+                  {user.role === 'admin' && (
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      className="btn btn-outline-danger mx-2 px-4"
+                    >
+                      حذف
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

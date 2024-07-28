@@ -17,9 +17,11 @@ import {
   AddNewFax,
   Users,
   AddNewUser,
+  Details,
+  Features,
 } from '@/pages';
 
-function Protect({ children, protect = false, path = '', role = 'user' }) {
+function Protect({ children, protect = false, path = '/', role = 'user' }) {
   const { user } = useAuth();
   const authed = authenticated();
 
@@ -37,8 +39,8 @@ function Protect({ children, protect = false, path = '', role = 'user' }) {
     authed !== true &&
     path !== 'login'
   )
-    return <Navigate to={'/'} />;
-  if (authed === protect && path !== 'dash') return children;
+    return <Navigate to={'/login'} />;
+  if (authed === protect && path !== '/login') return children;
   return <Navigate to={protect ? '/auth/login' : '/'} />;
 }
 const Routers = () => {
@@ -54,7 +56,9 @@ const Routers = () => {
             <Route path="/details/:id" element={<DetailsFax />} />
             <Route path="/addNewFax" element={<AddNewFax />} />
             <Route path="/users" element={<Users />} />
+            <Route path="/features" element={<Features />} />
             <Route path="/addnewuser" element={<AddNewUser />} />
+            <Route path="/detailss/:id" element={<Details />} />
 
             {/*///////////////////////// auth ///////////////////////////////////////*/}
 
