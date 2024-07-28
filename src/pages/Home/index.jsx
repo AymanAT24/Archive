@@ -13,8 +13,10 @@ const Home = () => {
 
   useEffect(() => {
     const token = localStorage.getItem('userToken');
+    const url = user.role === 'user' ? 'faxes/my-faxes' : 'faxes';
+
     axios
-      .get(`faxes`, {
+      .get(url, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -27,7 +29,7 @@ const Home = () => {
         console.log(err);
         toast.error('حدث خطأ ');
       });
-  }, []);
+  }, [user.role]);
 
   const handleDelete = (id) => {
     const token = localStorage.getItem('userToken');
@@ -72,18 +74,20 @@ const Home = () => {
   return (
     <>
       <div className="container shadow-none p-3 mt-3 mb-5 bg-body-dark rounded main-title">
-        <Header />
+        {user.role === 'admin' && <Header />}
         <h1 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded text-center">
           جميع الفكسات
         </h1>
-        <Link to={'/addNewFax'}>
-          <button
-            type="button"
-            className="btn my-5 text-start d-block p-3 btn-secondary"
-          >
-            اضافة فاكس جديد
-          </button>
-        </Link>
+        {user.role === 'user' && (
+          <Link to={'/addNewFax'}>
+            <button
+              type="button"
+              className="btn my-5 text-start d-block p-3 btn-secondary"
+            >
+              اضافة فاكس جديد
+            </button>
+          </Link>
+        )}
         <input
           className="form-control"
           id="search"
@@ -137,6 +141,16 @@ const Home = () => {
             ))}
           </tbody>
         </table>
+        <button
+          type="button"
+          className="btn btn-danger"
+          onClick={() => {
+            localStorage.removeItem('userToken');
+            window.location.href = '/auth/login';
+          }}
+        >
+          تسجيل الخروج
+        </button>
       </div>
     </>
   );
