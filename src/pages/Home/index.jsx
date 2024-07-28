@@ -108,8 +108,8 @@ const Home = () => {
             </button>
           </Link>
         )}
-        <div className="d-flex">
-          {/* {user.role === 'admin' && (
+        {/* <div className="d-flex"> */}
+        {/* {user.role === 'admin' && (
             <Link to={'/features'}>
               <button
                 type="button"
@@ -119,17 +119,17 @@ const Home = () => {
               </button>
             </Link>
           )} */}
-          {user.role === 'user' && (
-            <Link to={'/addNewFax'}>
-              <button
-                type="button"
-                className="btn my-5 text-start d-block p-3 btn-secondary"
-              >
-                اضافة فاكس جديد
-              </button>
-            </Link>
-          )}
-        </div>
+        {user.role === 'user' && (
+          <Link to={'/addNewFax'}>
+            <button
+              type="button"
+              className="btn my-5 text-start d-block p-3 btn-secondary"
+            >
+              اضافة فاكس جديد
+            </button>
+          </Link>
+        )}
+        {/* </div> */}
         <input
           className="form-control"
           id="search"

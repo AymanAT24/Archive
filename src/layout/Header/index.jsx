@@ -83,6 +83,19 @@ const Header = () => {
                   </Link>
                 </li>
               )}
+              {userRole !== 'user' && (
+                <li className="nav-item">
+                  <Link
+                    to={'/features'}
+                    className={`nav-link ${
+                      location.pathname === '/features' ? 'active-page' : ''
+                    } text-light fw-bolder`}
+                    aria-current="page"
+                  >
+                    اضافة خصائص
+                  </Link>
+                </li>
+              )}
             </ul>
             {isLoggedIn ? (
               <ul className="navbar-nav p-3 mb-2 mb-lg-0">

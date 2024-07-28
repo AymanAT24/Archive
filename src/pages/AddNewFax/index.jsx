@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router';
 import axios from '@/api/axios';
 import './AddNewFax.css';
 import { Header } from '@/layout';
-import { useAuth } from '@/context/Auth'; // Import useAuth to get the user role
 
 const AddNewFax = () => {
   const navigate = useNavigate();
@@ -12,8 +11,10 @@ const AddNewFax = () => {
   const [destinations, setDestinations] = useState([]);
   const [selectedDestination, setSelectedDestination] = useState('');
   const [subjects, setSubjects] = useState([]);
+  const [allSubjects, setAllSubjects] = useState([]);
   const [selectedSubject, setSelectedSubject] = useState('');
   const [abouts, setAbouts] = useState([]);
+  const [allAbouts, setAllAbouts] = useState([]);
   const [comment, setComment] = useState('');
   const [faxNumber, setFaxNumber] = useState('');
   const [faxType, setFaxType] = useState('');
@@ -23,11 +24,10 @@ const AddNewFax = () => {
   const [isDestinationSelected, setIsDestinationSelected] = useState(false);
 
   const token = localStorage.getItem('userToken');
-  const { user } = useAuth(); // Get user from useAuth
 
   useEffect(() => {
     axios
-      .get(`destinations`, {
+      .get('destinations', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -39,47 +39,92 @@ const AddNewFax = () => {
       .catch((err) => {
         console.log(err);
       });
-  }, [token]);
 
-  const handleDestinationChange = (e) => {
-    const destinationId = e.target.value;
-    setSelectedDestination(destinationId);
-    setIsDestinationSelected(!!destinationId); // Set selection state based on value
-
+    // Load all subjects and abouts initially
     axios
-      .get(`subjects/${destinationId}`, {
+      .get('subjects', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
+        setAllSubjects(res?.data.data);
         setSubjects(res?.data.data);
-        setSelectedSubject('');
-        setAbouts([]);
       })
       .catch((err) => {
         console.log(err);
       });
+
+    axios
+      .get('about', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setAllAbouts(res?.data.data);
+        setAbouts(res?.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [token]);
+
+  const handleDestinationChange = (e) => {
+    const destinationId = e.target.value;
+    setSelectedDestination(destinationId);
+    setIsDestinationSelected(!!destinationId);
+
+    if (destinationId) {
+      axios
+        .get(`subjects/${destinationId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          const relatedSubjects = res?.data.data;
+          setSubjects(
+            relatedSubjects.length > 0 ? relatedSubjects : allSubjects
+          );
+          setSelectedSubject('');
+          setAbouts([]);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      setSubjects(allSubjects);
+      setSelectedSubject('');
+      setAbouts([]);
+    }
   };
 
   const handleSubjectChange = (e) => {
     const subjectId = e.target.value;
     setSelectedSubject(subjectId);
 
-    axios
-      .get(`about/${subjectId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setAbouts(res?.data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (subjectId) {
+      axios
+        .get(`about/${subjectId}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          const relatedAbouts = res?.data.data;
+          setAbouts(relatedAbouts.length > 0 ? relatedAbouts : allAbouts);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      setAbouts(allAbouts);
+    }
   };
 
   const handleFileChange = (e) => {
@@ -134,7 +179,7 @@ const AddNewFax = () => {
 
     axios
       .post(
-        `faxes/add`,
+        'faxes/add',
         {
           comment,
           faxNumber,
@@ -163,7 +208,7 @@ const AddNewFax = () => {
   return (
     <div className="dashboard d-flex flex-row">
       <div className="container bg-dark text-center">
-        {user.role === 'admin' && <Header />}
+        <Header />
         <div className="shadow-none p-3 mt-3 mb-5 bg-body-dark rounded main-title">
           <h2 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded">
             اضافة فاكس جديد
