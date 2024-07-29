@@ -134,7 +134,8 @@ const Home = () => {
     <>
       <ToastContainer />
       <div className="container shadow-none p-3 mt-3 mb-5 bg-body-dark rounded main-title">
-        {user.role === 'admin' && <Header />}
+        {/* {user.role === 'admin' && <Header /> */}
+        <Header />
         <h1 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded text-center">
           جميع الفكسات
         </h1>
@@ -239,18 +240,6 @@ const Home = () => {
             disabled={currentPage === totalPages}
           >
             التالي
-          </button>
-        </div>
-        <div className="d-flex justify-content-center">
-          <button
-            type="button"
-            className="btn btn-danger"
-            onClick={() => {
-              localStorage.removeItem('userToken');
-              window.location.href = '/auth/login';
-            }}
-          >
-            تسجيل الخروج
           </button>
         </div>
       </div>

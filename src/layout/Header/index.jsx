@@ -16,12 +16,12 @@ const Header = () => {
 
     const fetchUserRole = async () => {
       try {
-        const response = await axios.get('/user/me', {
+        const response = await axios.get('user/myProfile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setUserRole(response.data.user.role);
+        setUserRole(response.data.data.role);
       } catch (error) {
         console.error('Failed to fetch user role:', error);
       }
@@ -36,7 +36,7 @@ const Header = () => {
     const token = localStorage.getItem('userToken');
 
     try {
-      await fetch('/user/logout', {
+      await fetch('user/logout', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -70,6 +70,7 @@ const Header = () => {
                   الصفحة الرئيسية
                 </Link>
               </li>
+
               {userRole !== 'user' && (
                 <li className="nav-item">
                   <Link
@@ -83,19 +84,17 @@ const Header = () => {
                   </Link>
                 </li>
               )}
-              {userRole !== 'user' && (
-                <li className="nav-item">
-                  <Link
-                    to={'/features'}
-                    className={`nav-link ${
-                      location.pathname === '/features' ? 'active-page' : ''
-                    } text-light fw-bolder`}
-                    aria-current="page"
-                  >
-                    اضافة خصائص
-                  </Link>
-                </li>
-              )}
+              <li className="nav-item">
+                <Link
+                  to={'/features'}
+                  className={`nav-link ${
+                    location.pathname === '/features' ? 'active-page' : ''
+                  } text-light fw-bolder`}
+                  aria-current="page"
+                >
+                  اضافة خصائص
+                </Link>
+              </li>
             </ul>
             {isLoggedIn ? (
               <ul className="navbar-nav p-3 mb-2 mb-lg-0">
