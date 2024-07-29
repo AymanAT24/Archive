@@ -51,6 +51,10 @@ const Features = () => {
   }, [token]);
 
   const handleAddFeatures = () => {
+    const selectedSubject = subjects.length > 0 ? subjects[0]._id : '';
+    const selectedDestination =
+      destinations.length > 0 ? destinations[0]._id : '';
+
     const addDestination = axios.post(
       'destinations/add',
       { name: newDestination },
@@ -64,7 +68,7 @@ const Features = () => {
 
     const addSubject = axios.post(
       'subjects/add',
-      { name: newSubject },
+      { name: newSubject, destination: selectedDestination },
       {
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +79,7 @@ const Features = () => {
 
     const addAbout = axios.post(
       'about/add',
-      { name: newAbout },
+      { name: newAbout, subject: selectedSubject },
       {
         headers: {
           'Content-Type': 'application/json',
