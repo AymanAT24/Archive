@@ -87,8 +87,8 @@ const Home = () => {
 
   const handleViewDetails = (id) => {
     const token = localStorage.getItem('userToken');
-    const url =
-      user.role === 'user' ? `faxes/getOneUserFax/${id}` : `faxes/${id}`;
+    const url = `faxes/getOneUserFax/${id}`;
+
     axios
       .get(url, {
         headers: {
@@ -97,7 +97,7 @@ const Home = () => {
         },
       })
       .then((res) => {
-        navigate(`/details/${id}`, { state: { fax: res.data.fax } });
+        navigate(`/details/${id}`, { state: { fax: res.data.fax[0] } });
       })
       .catch((err) => {
         console.log(err);
@@ -195,11 +195,13 @@ const Home = () => {
                   <td className="p-3">{item?.faxType}</td>
                   <td className="p-3">{item?.date.slice(0, 10)}</td>
                   <td className="p-3">
-                    <Link to={`/update/${item._id}`} state={{ item }}>
-                      <button className="btn btn-outline-success mx-2 px-4">
-                        تعديل
-                      </button>
-                    </Link>
+                    {user.role === 'admin' && (
+                      <Link to={`/update/${item._id}`} state={{ item }}>
+                        <button className="btn btn-outline-success mx-2 px-4">
+                          تعديل
+                        </button>
+                      </Link>
+                    )}
                     <button
                       onClick={() => handleViewDetails(item._id)}
                       className="btn btn-outline-info mx-2 px-4"

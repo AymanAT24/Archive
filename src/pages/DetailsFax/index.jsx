@@ -21,12 +21,13 @@ const DetailsFax = () => {
     if (!fax) {
       const fetchFaxDetails = async () => {
         try {
-          const response = await axios.get(`/faxes/${id}`, {
+          const response = await axios.get(`faxes/getOneUserFax/${id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          setFax(response.data.fax);
+          setFax(response.data.fax[0]);
+          console.log('Fetched Fax Details:', response.data.fax[0]);
         } catch (error) {
           if (error.response && error.response.status === 401) {
             setError('Unauthorized. Please log in again.');
@@ -44,6 +45,7 @@ const DetailsFax = () => {
       fetchFaxDetails();
     } else {
       setLoading(false);
+      console.log('Initial Fax Details:', fax);
     }
   }, [id, fax, token, navigate]);
 
@@ -71,7 +73,7 @@ const DetailsFax = () => {
       <div className="fax-files">
         {fax?.files?.length > 0 ? (
           <div className="files-scroll-container">
-            {fax?.files?.map((file, index) => (
+            {fax.files.map((file, index) => (
               <div key={index} className="fax-file-item">
                 <div
                   className="fax-file-preview"
