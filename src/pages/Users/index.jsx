@@ -219,12 +219,12 @@ const Users = () => {
   };
 
   return (
-    <div className="container bg-dark text-center">
+    <div className="container bg-light text-center">
       <Header />
       <ToastContainer />
-      <h1 className="text-center my-5 text-light fw-bolder shadow p-3 mb-5 rounded main-color">
+      <h2 className="text-center my-5 text-light fw-bolder shadow p-3 mb-5 rounded main-color">
         جميع المستخدمين
-      </h1>
+      </h2>
       <button
         type="button"
         onClick={openNewUserModal}
@@ -232,7 +232,7 @@ const Users = () => {
       >
         + اضافة مستخدم جديد
       </button>
-      <table className="table table-dark text-center table-hover text-light p-5 my-5">
+      <table className="table text-center table-hover text-light p-5 my-5">
         <thead>
           <tr>
             <th className="p-4">#</th>
@@ -246,7 +246,9 @@ const Users = () => {
             <tr key={item._id}>
               <td className="p-3">{index + 1}</td>
               <td className="p-3">{item.username}</td>
-              <td className="p-3">{item.role}</td>
+              <td className="p-3">
+                {item.role == 'user' ? 'مستخدم' : 'مسئول'}
+              </td>
               <td className="p-3">
                 <button
                   onClick={() => openPasswordModal(item)}
@@ -401,8 +403,8 @@ const Users = () => {
                 onChange={(e) => setEditRole(e.target.value)}
                 className="form-control"
               >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
+                <option value="user">مستخدم</option>
+                <option value="admin">مسئول</option>
               </select>
             </div>
             <button

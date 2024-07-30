@@ -9,12 +9,13 @@ const Header = () => {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState(null);
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('userToken');
     setIsLoggedIn(!!token);
 
-    const fetchUserRole = async () => {
+    const fetchUserProfile = async () => {
       try {
         const response = await axios.get('user/myProfile', {
           headers: {
@@ -22,13 +23,14 @@ const Header = () => {
           },
         });
         setUserRole(response.data.data.role);
+        setUserName(response.data.data.username);
       } catch (error) {
-        console.error('Failed to fetch user role:', error);
+        console.error('Failed to fetch user profile:', error);
       }
     };
 
     if (token) {
-      fetchUserRole();
+      fetchUserProfile();
     }
   }, []);
 
@@ -54,11 +56,18 @@ const Header = () => {
   };
 
   return (
-    <div className="header">
-      <nav className="navbar navbar-expand-lg bg-body-dark">
+    <div className="header bg-body-light">
+      <nav className="navbar navbar-expand-lg bg-body-light">
         <div className="container-fluid">
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav p-3 ms-auto mb-2 mb-lg-0">
+              {isLoggedIn && (
+                <li className="nav-item">
+                  <span className="nav-link text-light fw-bolder user-name">
+                    {`مرحباً, ${userName}`}
+                  </span>
+                </li>
+              )}
               <li className="nav-item">
                 <Link
                   to={'/'}
@@ -70,7 +79,6 @@ const Header = () => {
                   الصفحة الرئيسية
                 </Link>
               </li>
-
               {userRole !== 'user' && (
                 <li className="nav-item">
                   <Link

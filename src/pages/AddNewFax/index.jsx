@@ -9,6 +9,7 @@ const AddNewFax = () => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [destinations, setDestinations] = useState([]);
+  const [destinationId, setDestinationId] = useState([]);
   const [selectedDestination, setSelectedDestination] = useState('');
   const [subjects, setSubjects] = useState([]);
   const [allSubjects, setAllSubjects] = useState([]);
@@ -35,11 +36,12 @@ const AddNewFax = () => {
       })
       .then((res) => {
         setDestinations(res?.data.data);
+        setDestinationId = res.data._id;
       })
       .catch((err) => {
         console.log(err);
       });
-
+    /*
     // Load all subjects and abouts initially
     axios
       .get('subjects', {
@@ -70,6 +72,7 @@ const AddNewFax = () => {
       .catch((err) => {
         console.log(err);
       });
+      */
   }, [token]);
 
   const handleDestinationChange = (e) => {
@@ -207,10 +210,10 @@ const AddNewFax = () => {
 
   return (
     <div className="dashboard d-flex flex-row">
-      <div className="container bg-dark text-center">
+      <div className="container bg-light text-center">
         <Header />
         <div className="shadow-none p-3 mt-3 mb-5 bg-body-dark rounded main-title">
-          <h2 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded">
+          <h2 className="fs-1 fw-bolder text-light shadow p-3 mb-5 bg-body-dark rounded">
             اضافة فاكس جديد
           </h2>
         </div>

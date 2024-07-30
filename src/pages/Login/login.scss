@@ -1,3 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap');
+
+:root {
+  --background-color: #ffffff !important; /* Light background color */
+  --text-color: #000000 !important; /* Dark text color */
+  --card-background-color: #f8f9fa !important; /* Light card background color */
+  --button-color: #8d4d11 !important; /* Button color */
+  --button-hover-color: #6e3d0d !important; /* Button hover color */
+}
+
+/* Dark theme variables */
+[data-theme='dark'] {
+  --background-color: #121212 !important;
+  --text-color: #ffffff !important;
+  --card-background-color: #1e1e1e !important;
+  --button-color: #8d4d11 !important; /* Button color */
+  --button-hover-color: #6e3d0d !important; /* Button hover color */
+}
+
 body {
   background-color: var(--background-color) !important;
   color: var(--text-color) !important;
@@ -24,13 +43,18 @@ body {
   max-width: 500px !important;
   padding: 40px !important;
   background-color: var(--card-background-color) !important;
-  box-shadow: 0 4px 21px #265987 !important;
+  box-shadow: 0 4px 21px rgba(0, 0, 0, 0.1) !important;
   border-radius: 8px !important;
 }
 
 .btn-primary {
-  background-color: #265987 !important;
-  border-color: #265987 !important;
+  background-color: var(--button-color) !important;
+  border-color: var(--button-color) !important;
+}
+
+.btn-primary:hover {
+  background-color: var(--button-hover-color) !important;
+  border-color: var(--button-hover-color) !important;
 }
 
 .form-label {
@@ -39,15 +63,210 @@ body {
   direction: rtl !important;
 }
 
+/* General Styles */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap');
+
 :root {
-  --background-color: #121212 !important;
-  --text-color: #ffffff !important;
-  --card-background-color: #1e1e1e !important;
+  --main-color: #8d4d11;
+  --word-dash: #8d4d11;
+  --gold-color: #8d4d11;
+  --gold-color2: #8d4d11;
+  --darkblue-color: #8d4d11;
+  --shd: 0px 2px 50px 10px rgba(44, 43, 105, 0.29);
 }
 
-/* If you want to support light theme as well, you can define it like this and switch the theme using JavaScript if needed */
-[data-theme='light'] {
-  --background-color: #ffffff !important;
-  --text-color: #000000 !important;
-  --card-background-color: #f8f9fa !important;
+* {
+  font-family: 'Cairo', sans-serif !important;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: 'Sora', sans-serif;
+  color: inherit;
+  text-decoration: none !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--background-color);
+  text-align: end !important;
+}
+
+input,
+textarea {
+  border-radius: 5px !important;
+  padding: 5px 10px !important;
+  font-size: 18px !important;
+  border: 1px solid var(--gold-color) !important;
+}
+
+h2 {
+  color: var(--main-color);
+}
+
+button {
+  cursor: pointer;
+  border-radius: 10px !important;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--gold-color);
+  padding: 6px;
+}
+
+button:hover {
+  background-color: var(--button-hover-color) !important;
+  color: white;
+  border-color: #fff;
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading {
+  position: fixed;
+  inset: 0;
+  background-color: rgb(255, 255, 255);
+  display: grid;
+  color: black;
+  text-align: center;
+  z-index: 1000000;
+  place-content: center;
+  display: none;
+}
+
+.loading::before {
+  content: '';
+  width: 50px;
+  height: 50px;
+  border: 6px solid rgb(0, 0, 0);
+  border-top: 6px solid #8d4d11;
+  border-radius: 50%;
+  animation: spinner 1.2s linear infinite;
+}
+
+button {
+  cursor: pointer;
+  border-radius: 8px !important;
+}
+
+.Container {
+  padding: 30px 55px;
+  margin-inline: auto;
+  max-width: 1300px;
+}
+
+.back-details-button {
+  border-radius: 22px !important;
+  border: 3px solid #8d4d11;
+  background: none;
+  color: #8d4d11;
+  width: 7rem;
+}
+
+.editIcon {
+  background-color: #000;
+  color: white;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  font-size: 50px;
+  justify-content: center;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 2000;
+  align-items: center;
+  cursor: pointer !important;
+}
+
+.bacground-color-darkblue {
+  background-color: var(--darkblue-color);
+}
+
+.bacground-color-golden {
+  background-color: var(--gold-color);
+}
+
+@media (max-width: 700px) {
+  .responsive-home-grid {
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .Container {
+    padding: 10px 35px;
+
+    padding-bottom: 30px;
+
+    h2 {
+      margin-top: 30px;
+    }
+  }
+}
+
+/* Dark mode modal styling */
+.dark-mode-modal {
+  background-color: #333;
+  color: #fff;
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 600px;
+  margin: auto;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  animation: fadeIn 0.5s ease;
+}
+
+.dark-mode-overlay {
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+}
+
+.dark-mode-modal .form-group label {
+  color: #ccc;
+}
+
+.dark-mode-modal .form-group input {
+  background-color: #444;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+.dark-mode-modal .btn-primary {
+  background-color: var(--button-color) !important;
+  border-color: var(--button-color) !important;
+}
+
+.dark-mode-modal .btn-secondary {
+  background-color: var(--button-color) !important;
+  border-color: var(--button-color) !important;
+}
+
+/* Fade-in animation for the modal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }

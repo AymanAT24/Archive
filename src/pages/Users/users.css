@@ -1,9 +1,9 @@
 /* users.css */
 
-/* Dark mode modal styling */
-.dark-mode-modal {
-  background-color: #333;
-  color: #fff;
+/* Light mode modal styling */
+.light-mode-modal {
+  background-color: #fff; /* Light background color */
+  color: #000000; /* Dark text color */
   border-radius: 10px;
   padding: 2rem;
   max-width: 600px;
@@ -15,29 +15,39 @@
   animation: fadeIn 0.5s ease;
 }
 
-.dark-mode-overlay {
-  background-color: rgba(0, 0, 0, 0.75);
+.light-mode-overlay {
+  background-color: rgba(255, 255, 255, 0.75); /* Light overlay color */
   backdrop-filter: blur(10px);
 }
 
-.dark-mode-modal .form-group label {
-  color: #ccc;
+.light-mode-modal .form-group label {
+  color: #bdbaba; /* Darker label color for contrast */
 }
 
-.dark-mode-modal .form-group input {
-  background-color: #444;
-  color: #fff;
-  border: 1px solid #555;
+.light-mode-modal .form-group input {
+  background-color: #f8f9fa; /* Light input background color */
+  color: #d8d5d5; /* Dark text color */
+  border: 1px solid #ccc; /* Light border color */
 }
 
-.dark-mode-modal .btn-primary {
-  background-color: #3d278f !important;
-  border-color: #0056b3;
+.light-mode-modal .btn-primary {
+  background-color: #ff0000 !important; /* Specified button color */
+  border-color: #8d4d11 !important;
 }
 
-.dark-mode-modal .btn-secondary {
-  background-color: #3d278f !important;
-  border-color: #333;
+.light-mode-modal .btn-primary:hover {
+  background-color: #703b0d !important; /* Slightly darker shade on hover */
+  border-color: #703b0d !important;
+}
+
+.light-mode-modal .btn-secondary {
+  background-color: #8d4d11 !important; /* Specified button color */
+  border-color: #8d4d11 !important;
+}
+
+.light-mode-modal .btn-secondary:hover {
+  background-color: #703b0d !important; /* Slightly darker shade on hover */
+  border-color: #703b0d !important;
 }
 
 /* Fade-in animation for the modal */

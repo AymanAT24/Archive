@@ -2,15 +2,15 @@
 
 .header {
   .navbar {
-    background-color: #1e1e1e !important;
+    background-color: #f8f9fa; // Lighter background color
   }
 
   .nav-link {
-    color: #ffffff !important;
+    color: #000000 !important; // Dark text color for better contrast
     font-weight: bold !important;
 
     &.active-page {
-      color: #397ab3 !important; // Highlight color for the active page
+      color: #8d4d11 !important; // Highlight color for the active page
       position: relative;
 
       &:after {
@@ -19,8 +19,8 @@
         bottom: -20px;
         left: 50%;
         transform: translateX(-50%);
-        background-color: #397ab3;
-        color: #1e1e1e;
+        background-color: #8d4d11;
+        color: #f8f9fa;
         padding: 2px 5px;
         border-radius: 3px;
         font-size: 12px;
@@ -35,14 +35,20 @@
   }
 
   .btn-logout {
-    background-color: #265987 !important;
+    background-color: #d12f1a !important; // Lighter button background color
     border: none !important;
+    color: white !important;
     cursor: pointer !important;
     padding: 10px 20px !important;
   }
 
   .btn-logout:hover {
-    background-color: #265987ab !important;
+    background-color: rgba(
+      255,
+      0,
+      0,
+      0.781
+    ) !important; // Slightly darker shade on hover
   }
 
   .ms-auto {
@@ -53,5 +59,9 @@
     .nav-item {
       margin-left: 10px !important;
     }
+  }
+
+  .user-name {
+    color: #8d4d11 !important; // Dark color for the username
   }
 }

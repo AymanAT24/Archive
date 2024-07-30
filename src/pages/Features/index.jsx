@@ -8,11 +8,13 @@ import 'react-toastify/dist/ReactToastify.css';
 const Features = () => {
   const [destinations, setDestinations] = useState([]);
   const [newDestination, setNewDestination] = useState('');
-  const [subjects, setSubjects] = useState([]);
   const [newSubject, setNewSubject] = useState('');
-  const [abouts, setAbouts] = useState([]);
   const [newAbout, setNewAbout] = useState('');
   const [token, setToken] = useState(localStorage.getItem('userToken'));
+  const [destinationId, setDestinationId] = useState(null);
+  const [subjectId, setSubjectId] = useState(null);
+  const [isSubjectEnabled, setIsSubjectEnabled] = useState(false);
+  const [isAboutEnabled, setIsAboutEnabled] = useState(false);
 
   useEffect(() => {
     axios
@@ -24,81 +26,92 @@ const Features = () => {
       })
       .then((res) => setDestinations(res.data.data))
       .catch((err) => console.log(err));
-
-    axios
-      .get('subjects', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setSubjects(res.data.data);
-      })
-      .catch((err) => console.log(err));
-
-    axios
-      .get('about', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setAbouts(res.data.data);
-      })
-      .catch((err) => console.log(err));
   }, [token]);
 
-  const handleAddFeatures = () => {
-    const selectedSubject = subjects.length > 0 ? subjects[0]._id : '';
-    const selectedDestination =
-      destinations.length > 0 ? destinations[0]._id : '';
+  const handleConfirmDestination = () => {
+    axios
+      .post(
+        'destinations/add',
+        { name: newDestination },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.status) {
+          setDestinationId(res.data.doc._id);
+          setIsSubjectEnabled(true);
+          toast.success('تم انشاء الجهة');
+          console.log(res.data.doc._id);
+          // window.location.reload(); // Reload the page to refresh the state
+        } else {
+          toast.error('حدث خطأ أثناء الإنشاء');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('حدث خطأ أثناء الإنشاء');
+      });
+  };
 
-    const addDestination = axios.post(
-      'destinations/add',
-      { name: newDestination },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+  const handleConfirmSubject = () => {
+    if (!destinationId) {
+      toast.error('الجهة غير محددة');
+      return;
+    }
+    console.log(token);
+    axios
+      .post(
+        'subjects/add',
+        { name: newSubject, destination: destinationId },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.status) {
+          setSubjectId(res.data.doc._id);
+          setIsAboutEnabled(true);
+          toast.success('تم انشاء الموضوع');
+          console.log(res.data.doc._id);
+          // window.location.reload(); // Reload the page to refresh the state
+        } else {
+          toast.error('حدث خطأ أثناء الإنشاء');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('حدث خطأ أثناء الإنشاء');
+      });
+  };
 
-    const addSubject = axios.post(
-      'subjects/add',
-      { name: newSubject, destination: selectedDestination },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+  const handleConfirmAbout = () => {
+    if (!subjectId) {
+      toast.error('الموضوع غير محدد');
+      return;
+    }
 
-    const addAbout = axios.post(
-      'about/add',
-      { name: newAbout, subject: selectedSubject },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    Promise.all([addDestination, addSubject, addAbout])
-      .then((responses) => {
-        const allSuccessful = responses.every(
-          (response) => response.data.status === true
-        );
-
-        if (allSuccessful) {
-          toast.success('تم الانشاء');
-          setNewDestination('');
-          setNewSubject('');
-          setNewAbout('');
+    axios
+      .post(
+        'about/add',
+        { name: newAbout, subject: subjectId },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.status) {
+          toast.success('تم انشاء البشان');
+          // window.location.reload(); // Reload the page to refresh the state
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -110,10 +123,10 @@ const Features = () => {
   };
 
   return (
-    <div className="features-container bg-dark text-center p-5">
-      <div className="shadow-none p-3 mb-5 bg-body-dark rounded main-title">
+    <div className="features-container bg-light text-center p-5">
+      <div className="shadow-none p-3 mb-5 bg-body-light rounded main-title">
         <Header />
-        <h2 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded">
+        <h2 className="fs-1 fw-bold text-light shadow p-3 my-5 bg-body-light rounded">
           اضافة خصائص
         </h2>
       </div>
@@ -126,6 +139,13 @@ const Features = () => {
             value={newDestination}
             onChange={(e) => setNewDestination(e.target.value)}
           />
+          <button
+            className="btn btn-secondary confirm-btn"
+            onClick={handleConfirmDestination}
+            disabled={!newDestination}
+          >
+            تأكيد
+          </button>
         </div>
         <div className="d-flex flex-column mb-4">
           <input
@@ -134,7 +154,15 @@ const Features = () => {
             placeholder="اضافة موضوع"
             value={newSubject}
             onChange={(e) => setNewSubject(e.target.value)}
+            disabled={!isSubjectEnabled}
           />
+          <button
+            className="btn btn-secondary confirm-btn"
+            onClick={handleConfirmSubject}
+            disabled={!newSubject || !isSubjectEnabled}
+          >
+            تأكيد
+          </button>
         </div>
         <div className="d-flex flex-column mb-4">
           <input
@@ -143,15 +171,16 @@ const Features = () => {
             placeholder="اضافة بشان"
             value={newAbout}
             onChange={(e) => setNewAbout(e.target.value)}
+            disabled={!isAboutEnabled}
           />
+          <button
+            className="btn btn-secondary confirm-btn"
+            onClick={handleConfirmAbout}
+            disabled={!newAbout || !isAboutEnabled}
+          >
+            تأكيد
+          </button>
         </div>
-        <button
-          className="btn btn-secondary"
-          onClick={handleAddFeatures}
-          disabled={!newDestination || !newSubject || !newAbout}
-        >
-          انشاء الخصائص
-        </button>
       </div>
       <ToastContainer />
     </div>

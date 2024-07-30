@@ -133,12 +133,11 @@ const Home = () => {
   return (
     <>
       <ToastContainer />
-      <div className="container shadow-none p-3 mt-3 mb-5 bg-body-dark rounded main-title">
-        {/* {user.role === 'admin' && <Header /> */}
+      <div className="container shadow-none p-3 mt-3 mb-5 bg-body-light rounded main-title">
         <Header />
-        <h1 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-dark rounded text-center">
+        <h2 className="fs-1 fw-bold text-light shadow p-3 mb-5 bg-body-light rounded text-center">
           جميع الفكسات
-        </h1>
+        </h2>
         {user.role === 'admin' && (
           <Link to={'/addNewFax'}>
             <button
@@ -165,83 +164,89 @@ const Home = () => {
           placeholder="أكتب للبحث ..."
           onChange={(e) => setSearch(e.target.value)}
         />
-        <div className="table-responsive">
-          <table className="table table-dark text-center table-hover text-light p-5 my-5">
-            <thead>
-              <tr>
-                <th className="p-4">#</th>
-                <th className="p-4">الجهة</th>
-                <th className="p-4">الموضوع</th>
-                <th className="p-4">بشأن</th>
-                <th className="p-4">كود الفاكس</th>
-                <th className="p-4">نوع الفاكس</th>
-                <th className="p-4">التاريخ</th>
-                <th className="p-4">الاحداث</th>
-              </tr>
-            </thead>
-            <tbody className="text-center p-5">
-              {paginatedData?.map((item, index) => (
-                <tr key={item._id}>
-                  <td className="p-3">
-                    {(currentPage - 1) * itemsPerPage + index + 1}
-                  </td>
-                  <td className="p-3">
-                    {item?.about?.subject?.destination?.name || 'غير محدد'}
-                  </td>
-                  <td className="p-3">
-                    {item?.about?.subject?.name || 'غير محدد'}
-                  </td>
-                  <td className="p-3">{item?.about?.name || 'غير محدد'}</td>
-                  <td className="p-3">{item?.faxNumber}</td>
-                  <td className="p-3">{item?.faxType}</td>
-                  <td className="p-3">{item?.date.slice(0, 10)}</td>
-                  <td className="p-3">
-                    {user.role === 'admin' && (
-                      <Link to={`/update/${item._id}`} state={{ item }}>
-                        <button className="btn btn-outline-success mx-2 px-4">
-                          تعديل
+        {paginatedData?.length > 0 ? (
+          <>
+            <div className="table-responsive">
+              <table className="table text-center table-hover text-dark p-5 my-5">
+                <thead>
+                  <tr>
+                    <th className="p-4">#</th>
+                    <th className="p-4">الجهة</th>
+                    <th className="p-4">الموضوع</th>
+                    <th className="p-4">بشأن</th>
+                    <th className="p-4">كود الفاكس</th>
+                    <th className="p-4">نوع الفاكس</th>
+                    <th className="p-4">التاريخ</th>
+                    <th className="p-4">الاحداث</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center p-5">
+                  {paginatedData?.map((item, index) => (
+                    <tr key={item._id}>
+                      <td className="p-3">
+                        {(currentPage - 1) * itemsPerPage + index + 1}
+                      </td>
+                      <td className="p-3">
+                        {item?.about?.subject?.destination?.name || 'غير محدد'}
+                      </td>
+                      <td className="p-3">
+                        {item?.about?.subject?.name || 'غير محدد'}
+                      </td>
+                      <td className="p-3">{item?.about?.name || 'غير محدد'}</td>
+                      <td className="p-3">{item?.faxNumber}</td>
+                      <td className="p-3">{item?.faxType}</td>
+                      <td className="p-3">{item?.date.slice(0, 10)}</td>
+                      <td className="p-3">
+                        {user.role === 'admin' && (
+                          <Link to={`/update/${item._id}`} state={{ item }}>
+                            <button className="btn btn-outline-success mx-2 px-4">
+                              تعديل
+                            </button>
+                          </Link>
+                        )}
+                        <button
+                          onClick={() => handleViewDetails(item._id)}
+                          className="btn btn-outline-info mx-2 px-4"
+                        >
+                          ملحقات
                         </button>
-                      </Link>
-                    )}
-                    <button
-                      onClick={() => handleViewDetails(item._id)}
-                      className="btn btn-outline-info mx-2 px-4"
-                    >
-                      ملحقات
-                    </button>
-                    {user.role === 'admin' && (
-                      <button
-                        onClick={() => handleDelete(item._id)}
-                        className="btn btn-outline-danger mx-2 px-4"
-                      >
-                        حذف
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="d-flex justify-content-between">
-          <button
-            className="btn btn-primary"
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            السابق
-          </button>
-          <span className="mx-2">
-            صفحة {currentPage} من {totalPages}
-          </span>
-          <button
-            className="btn btn-primary"
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            التالي
-          </button>
-        </div>
+                        {user.role === 'admin' && (
+                          <button
+                            onClick={() => handleDelete(item._id)}
+                            className="btn btn-outline-danger mx-2 px-4"
+                          >
+                            حذف
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="d-flex justify-content-between">
+              <button
+                className="btn btn-primary"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                السابق
+              </button>
+              <span className="mx-2">
+                صفحة {currentPage} من {totalPages}
+              </span>
+              <button
+                className="btn btn-primary"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                التالي
+              </button>
+            </div>
+          </>
+        ) : (
+          <h2 className="text-center text-light my-5">لا توجد فكسات متاحة</h2>
+        )}
       </div>
     </>
   );

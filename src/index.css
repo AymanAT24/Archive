@@ -1,12 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap');
 
 :root {
-  --main-color: ##265987;
-  --word-dash: #413ea0;
-  --gold-color: #265987;
-  --gold-color2: #265987;
-  --darkblue-color: #265987;
-  --shd: 0px 2px 50px 10px rgba(44, 43, 105, 0.59);
+  --main-color: #8d4d11;
+  --word-dash: #8d4d11;
+  --gold-color: #8d4d11;
+  --gold-color2: #8d4d11;
+  --darkblue-color: #8d4d11;
+  --shd: 0px 2px 50px 10px rgba(44, 43, 105, 0.29);
+  --background-color: #ffffff;
+  --text-color: #000000;
 }
 
 * {
@@ -30,7 +32,8 @@ body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
-  background: #021526;
+  background: var(--background-color);
+  color: var(--text-color);
   text-align: end !important;
 }
 
@@ -43,7 +46,7 @@ textarea {
 }
 
 h2 {
-  color: #265987;
+  color: var(--main-color);
 }
 
 button {
@@ -57,7 +60,7 @@ button {
 }
 
 button:hover {
-  background-color: #161635;
+  background-color: #703b0d !important;
   color: white;
   border-color: #fff;
 }
@@ -89,7 +92,7 @@ button:hover {
   width: 50px;
   height: 50px;
   border: 6px solid rgb(0, 0, 0);
-  border-top: 6px solid #9b4caf00;
+  border-top: 6px solid #8d4d11;
   border-radius: 50%;
   animation: spinner 1.2s linear infinite;
 }
@@ -107,9 +110,9 @@ button {
 
 .back-details-button {
   border-radius: 22px !important;
-  border: 3px solid #9b9ec1;
+  border: 3px solid #8d4d11;
   background: none;
-  color: #9b9ec1;
+  color: #8d4d11;
   width: 7rem;
 }
 
