@@ -152,9 +152,9 @@ const Home = () => {
           <Link to={'/addNewFax'}>
             <button
               type="button"
-              className="btn my-5 text-start d-block p-3 btn-secondary"
+              className="btn my-5 text-start d-block p-3 btn fw-bolder d-block ms-auto btn-secondary"
             >
-              اضافة فاكس جديد
+              + اضافة فاكس جديد
             </button>
           </Link>
         )}
@@ -172,8 +172,7 @@ const Home = () => {
                   <tr>
                     <th className="p-4">#</th>
                     <th className="p-4">الجهة</th>
-                    <th className="p-4">الموضوع</th>
-                    <th className="p-4">بشأن</th>
+                    <th className="p-4">المستخدم</th>
                     <th className="p-4">كود الفاكس</th>
                     <th className="p-4">نوع الفاكس</th>
                     <th className="p-4">التاريخ</th>
@@ -186,13 +185,11 @@ const Home = () => {
                       <td className="p-3">
                         {(currentPage - 1) * itemsPerPage + index + 1}
                       </td>
-                      <td className="p-3">
-                        {item?.about?.subject?.destination?.name || 'غير محدد'}
-                      </td>
-                      <td className="p-3">
-                        {item?.about?.subject?.name || 'غير محدد'}
-                      </td>
+
                       <td className="p-3">{item?.about?.name || 'غير محدد'}</td>
+                      <td className="p-3">
+                        {item?.user.username || 'غير محدد'}
+                      </td>
                       <td className="p-3">{item?.faxNumber}</td>
                       <td className="p-3">{item?.faxType}</td>
                       <td className="p-3">{item?.date.slice(0, 10)}</td>
@@ -204,11 +201,16 @@ const Home = () => {
                             </button>
                           </Link>
                         )}
+                        <Link to={'/moredetails'} state={{ item }}>
+                          <button className="btn btn-outline-info mx-2 px-4">
+                            تفاصيل
+                          </button>
+                        </Link>
                         <button
                           onClick={() => handleViewDetails(item._id)}
                           className="btn btn-outline-info mx-2 px-4"
                         >
-                          ملحقات
+                          عرض الملف
                         </button>
                         {user.role === 'admin' && (
                           <button

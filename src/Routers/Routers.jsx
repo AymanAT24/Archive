@@ -17,7 +17,7 @@ import {
   AddNewFax,
   Users,
   AddNewUser,
-  Details,
+  MoreDetails,
   Features,
 } from '@/pages';
 
@@ -58,7 +58,7 @@ const Routers = () => {
             <Route path="/users" element={<Users />} />
             <Route path="/features" element={<Features />} />
             <Route path="/addnewuser" element={<AddNewUser />} />
-            <Route path="/detailss/:id" element={<Details />} />
+            <Route path="/moredetails" element={<MoreDetails />} />
 
             {/*///////////////////////// auth ///////////////////////////////////////*/}
 
