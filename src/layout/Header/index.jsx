@@ -100,7 +100,7 @@ const Header = () => {
                   } text-light fw-bolder`}
                   aria-current="page"
                 >
-                  اضافة خصائص
+                  الخصائص
                 </Link>
               </li>
             </ul>

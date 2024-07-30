@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from '@/api/axios';
 import './Features.css';
 import { Header } from '@/layout';
@@ -7,15 +7,31 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Features = () => {
   const [destinations, setDestinations] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [abouts, setAbouts] = useState([]);
+
   const [selectedDestination, setSelectedDestination] = useState('');
+  const [selectedSubject, setSelectedSubject] = useState('');
+  const [selectedAbout, setSelectedAbout] = useState('');
+
   const [newDestination, setNewDestination] = useState('');
   const [newSubject, setNewSubject] = useState('');
   const [newAbout, setNewAbout] = useState('');
+
   const [token, setToken] = useState(localStorage.getItem('userToken'));
+
   const [destinationId, setDestinationId] = useState(null);
   const [subjectId, setSubjectId] = useState(null);
+  const [aboutId, setAboutId] = useState(null);
+
   const [isSubjectEnabled, setIsSubjectEnabled] = useState(false);
   const [isAboutEnabled, setIsAboutEnabled] = useState(false);
+
+  const [isDestinationSelected, setIsDestinationSelected] = useState(false);
+  const [isSubjectSelected, setIsSubjectSelected] = useState(false);
+  const [isAboutSelected, setIsAboutSelected] = useState(false);
+
+  const [isTypingNewDestination, setIsTypingNewDestination] = useState(false);
 
   useEffect(() => {
     axios
@@ -26,8 +42,37 @@ const Features = () => {
         },
       })
       .then((res) => {
-        setDestinationId(res.data._id);
         setDestinations(res.data.data);
+      })
+      .catch((err) => console.log(err));
+  }, [token]);
+
+  useEffect(() => {
+    if (selectedDestination) {
+      axios
+        .get(`subjects/${selectedDestination}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          setSubjects(res.data.data);
+        })
+        .catch((err) => console.log(err));
+    }
+  }, [selectedDestination, token]);
+
+  useEffect(() => {
+    axios
+      .get('about', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setAbouts(res.data.data);
       })
       .catch((err) => console.log(err));
   }, [token]);
@@ -36,7 +81,7 @@ const Features = () => {
     axios
       .post(
         'destinations/add',
-        { name: newDestination, id: destinationId },
+        { name: newDestination },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -48,8 +93,8 @@ const Features = () => {
         if (res.data.status) {
           setDestinationId(res.data._id);
           setIsSubjectEnabled(true);
+          setIsDestinationSelected(true);
           toast.success('تم انشاء الجهة');
-          console.log(res.data._id);
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -61,12 +106,11 @@ const Features = () => {
   };
 
   const handleConfirmSubject = () => {
-    const selectedId = selectedDestination || destinationId;
-    if (!selectedId) {
+    if (!selectedDestination && !destinationId) {
       toast.error('الجهة غير محددة');
       return;
     }
-    console.log(token);
+    const selectedId = selectedDestination || destinationId;
     axios
       .post(
         'subjects/add',
@@ -82,8 +126,8 @@ const Features = () => {
         if (res.data.status) {
           setSubjectId(res.data.doc._id);
           setIsAboutEnabled(true);
+          setIsSubjectSelected(true);
           toast.success('تم انشاء الموضوع');
-          console.log(res.data.doc._id);
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -95,11 +139,10 @@ const Features = () => {
   };
 
   const handleConfirmAbout = () => {
-    if (!subjectId) {
+    if (!selectedSubject && !subjectId) {
       toast.error('الموضوع غير محدد');
       return;
     }
-
     axios
       .post(
         'about/add',
@@ -114,6 +157,7 @@ const Features = () => {
       .then((res) => {
         if (res.data.status) {
           toast.success('تم انشاء البشان');
+          setIsAboutSelected(true);
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -127,29 +171,225 @@ const Features = () => {
   const handleSelectDestination = (e) => {
     const selectedId = e.target.value;
     setSelectedDestination(selectedId);
-    const selectedDest = destinations.find(
-      (destination) => destination._id === selectedId
-    );
-    if (selectedDest) {
-      setNewDestination(selectedDest.name);
-      setDestinationId(selectedDest._id);
-      setIsSubjectEnabled(true);
-    } else {
-      setNewDestination('');
-      setDestinationId(null);
-      setIsSubjectEnabled(false);
-      setIsAboutEnabled(false);
-    }
+    setIsDestinationSelected(!!selectedId);
+    setIsTypingNewDestination(false);
+    setIsSubjectEnabled(true);
+    setDestinationId(selectedId);
+  };
+
+  const handleSelectSubject = (e) => {
+    const selectedId = e.target.value;
+    setSelectedSubject(selectedId);
+    setIsSubjectSelected(!!selectedId);
+    setIsAboutEnabled(true);
+    setSubjectId(selectedId);
+  };
+
+  const handleSelectAbout = (e) => {
+    const selectedId = e.target.value;
+    setSelectedAbout(selectedId);
+    setIsAboutSelected(!!selectedId);
+    setAboutId(selectedId);
   };
 
   const handleDestinationInputChange = (e) => {
     const value = e.target.value;
     setNewDestination(value);
+    setIsTypingNewDestination(value.trim() !== '');
+
     if (value.trim() === '') {
       setIsSubjectEnabled(false);
       setIsAboutEnabled(false);
       setSelectedDestination('');
+      setIsDestinationSelected(false);
     }
+  };
+
+  const handleSubjectInputChange = (e) => {
+    const value = e.target.value;
+    setNewSubject(value);
+    if (value.trim() === '') {
+      setIsAboutEnabled(false);
+      setSelectedSubject('');
+      setIsSubjectSelected(false);
+    }
+  };
+
+  const handleAboutInputChange = (e) => {
+    const value = e.target.value;
+    setNewAbout(value);
+    if (value.trim() === '') {
+      setSelectedAbout('');
+      setIsAboutSelected(false);
+    }
+  };
+
+  const handleEditDestination = () => {
+    if (!selectedDestination) {
+      toast.error('يرجى تحديد الجهة لتعديلها');
+      return;
+    }
+    axios
+      .patch(
+        `destinations/${selectedDestination}`,
+        { name: newDestination },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.status) {
+          toast.success('تم تعديل الجهة بنجاح');
+          // Optionally, update state to reflect changes
+        } else {
+          toast.error('حدث خطأ أثناء التعديل');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('حدث خطأ أثناء التعديل');
+      });
+  };
+
+  const handleEditSubject = () => {
+    if (!selectedSubject) {
+      toast.error('يرجى تحديد الموضوع لتعديله');
+      return;
+    }
+    axios
+      .patch(
+        `subjects/${selectedSubject}`,
+        { name: newSubject },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.status) {
+          toast.success('تم تعديل الموضوع بنجاح');
+          // Optionally, update state to reflect changes
+        } else {
+          toast.error('حدث خطأ أثناء التعديل');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('حدث خطأ أثناء التعديل');
+      });
+  };
+
+  const handleEditAbout = () => {
+    if (!selectedAbout) {
+      toast.error('يرجى تحديد البشان لتعديله');
+      return;
+    }
+    axios
+      .patch(
+        `about/${selectedAbout}`,
+        { name: newAbout },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.status) {
+          toast.success('تم تعديل البشان بنجاح');
+          // Optionally, update state to reflect changes
+        } else {
+          toast.error('حدث خطأ أثناء التعديل');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('حدث خطأ أثناء التعديل');
+      });
+  };
+
+  const handleDeleteDestination = () => {
+    if (!selectedDestination) {
+      toast.error('يرجى تحديد الجهة لحذفها');
+      return;
+    }
+    axios
+      .delete(`destinations/${selectedDestination}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        if (res.data.status) {
+          toast.success('تم حذف الجهة بنجاح');
+          // Optionally, update state to reflect changes
+        } else {
+          toast.error('حدث خطأ أثناء الحذف');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('حدث خطأ أثناء الحذف');
+      });
+  };
+
+  const handleDeleteSubject = () => {
+    if (!selectedSubject) {
+      toast.error('يرجى تحديد الموضوع لحذفه');
+      return;
+    }
+    axios
+      .delete(`subjects/${selectedSubject}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        if (res.data.status) {
+          toast.success('تم حذف الموضوع بنجاح');
+          // Optionally, update state to reflect changes
+        } else {
+          toast.error('حدث خطأ أثناء الحذف');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('حدث خطأ أثناء الحذف');
+      });
+  };
+
+  const handleDeleteAbout = () => {
+    if (!selectedAbout) {
+      toast.error('يرجى تحديد البشان لحذفه');
+      return;
+    }
+    axios
+      .delete(`about/${selectedAbout}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        if (res.data.status) {
+          toast.success('تم حذف البشان بنجاح');
+          // Optionally, update state to reflect changes
+        } else {
+          toast.error('حدث خطأ أثناء الحذف');
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('حدث خطأ أثناء الحذف');
+      });
   };
 
   return (
@@ -157,7 +397,7 @@ const Features = () => {
       <div className="shadow-none p-3 mb-5 bg-body-light rounded main-title">
         <Header />
         <h2 className="fs-1 fw-bold text-light shadow p-3 my-5 bg-body-light rounded">
-          اضافة خصائص
+          الخصائص
         </h2>
       </div>
       <div className="add-new-entry">
@@ -177,53 +417,125 @@ const Features = () => {
           <input
             type="text"
             className="form-control mb-2"
-            placeholder="اضافة اسم الجهة"
+            placeholder="اضافة اسم جهة جديد"
             value={newDestination}
             onChange={handleDestinationInputChange}
           />
-          <button
-            className="btn btn-secondary confirm-btn"
-            onClick={handleConfirmDestination}
-            disabled={!newDestination}
-          >
-            تأكيد
-          </button>
+          <div className="btn-group">
+            <button
+              className="btn btn-secondary confirm-btn"
+              onClick={handleConfirmDestination}
+              disabled={!isTypingNewDestination}
+            >
+              اضافة
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={handleEditDestination}
+              disabled={!selectedDestination && !isTypingNewDestination}
+            >
+              تعديل
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={handleDeleteDestination}
+              disabled={!selectedDestination && !isTypingNewDestination}
+            >
+              حذف
+            </button>
+          </div>
         </div>
+
         <div className="d-flex flex-column mb-4">
+          <select
+            className="form-control mb-2"
+            value={selectedSubject}
+            onChange={handleSelectSubject}
+            disabled={!isSubjectEnabled}
+          >
+            <option value="">اختر موضوع</option>
+            {subjects.map((subject) => (
+              <option key={subject._id} value={subject._id}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
             className="form-control mb-2"
-            placeholder="اضافة موضوع"
+            placeholder="اضافة اسم موضوع جديد"
             value={newSubject}
-            onChange={(e) => setNewSubject(e.target.value)}
-            disabled={!isSubjectEnabled && !selectedDestination}
+            onChange={handleSubjectInputChange}
           />
-          <button
-            className="btn btn-secondary confirm-btn"
-            onClick={handleConfirmSubject}
-            disabled={
-              !newSubject || (!isSubjectEnabled && !selectedDestination)
-            }
-          >
-            تأكيد
-          </button>
+          <div className="btn-group">
+            <button
+              className="btn btn-secondary"
+              onClick={handleConfirmSubject}
+              disabled={!isSubjectEnabled}
+            >
+              اضافة
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={handleEditSubject}
+              disabled={!selectedSubject && !newSubject}
+            >
+              تعديل
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={handleDeleteSubject}
+              disabled={!selectedSubject && !newSubject}
+            >
+              حذف
+            </button>
+          </div>
         </div>
+
         <div className="d-flex flex-column mb-4">
+          <select
+            className="form-control mb-2"
+            value={selectedAbout}
+            onChange={handleSelectAbout}
+            disabled={!isAboutEnabled}
+          >
+            <option value="">اختر بشان</option>
+            {abouts.map((about) => (
+              <option key={about._id} value={about._id}>
+                {about.name}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
             className="form-control mb-2"
-            placeholder="اضافة بشان"
+            placeholder="اضافة اسم بشان جديد"
             value={newAbout}
-            onChange={(e) => setNewAbout(e.target.value)}
-            disabled={!isAboutEnabled}
+            onChange={handleAboutInputChange}
           />
-          <button
-            className="btn btn-secondary confirm-btn"
-            onClick={handleConfirmAbout}
-            disabled={!newAbout || !isAboutEnabled}
-          >
-            تأكيد
-          </button>
+          <div className="btn-group">
+            <button
+              className="btn btn-secondary"
+              onClick={handleConfirmAbout}
+              disabled={!isAboutEnabled}
+            >
+              اضافة
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={handleEditAbout}
+              disabled={!selectedAbout && !newAbout}
+            >
+              تعديل
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={handleDeleteAbout}
+              disabled={!selectedAbout && !newAbout}
+            >
+              حذف
+            </button>
+          </div>
         </div>
       </div>
       <ToastContainer />
