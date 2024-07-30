@@ -134,6 +134,21 @@ const Features = () => {
       setNewDestination(selectedDest.name);
       setDestinationId(selectedDest._id);
       setIsSubjectEnabled(true);
+    } else {
+      setNewDestination('');
+      setDestinationId(null);
+      setIsSubjectEnabled(false);
+      setIsAboutEnabled(false);
+    }
+  };
+
+  const handleDestinationInputChange = (e) => {
+    const value = e.target.value;
+    setNewDestination(value);
+    if (value.trim() === '') {
+      setIsSubjectEnabled(false);
+      setIsAboutEnabled(false);
+      setSelectedDestination('');
     }
   };
 
@@ -164,7 +179,7 @@ const Features = () => {
             className="form-control mb-2"
             placeholder="اضافة اسم الجهة"
             value={newDestination}
-            onChange={(e) => setNewDestination(e.target.value)}
+            onChange={handleDestinationInputChange}
           />
           <button
             className="btn btn-secondary confirm-btn"
