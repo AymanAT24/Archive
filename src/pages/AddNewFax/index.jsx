@@ -9,7 +9,7 @@ const AddNewFax = () => {
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [destinations, setDestinations] = useState([]);
-  const [destinationId, setDestinationId] = useState([]);
+  // const [destinationId, setDestinationId] = useState([]);
   const [selectedDestination, setSelectedDestination] = useState('');
   const [subjects, setSubjects] = useState([]);
   const [allSubjects, setAllSubjects] = useState([]);
