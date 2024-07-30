@@ -66,7 +66,7 @@ const Features = () => {
 
   useEffect(() => {
     axios
-      .get('about', {
+      .get(`about/${selectedSubject}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -76,7 +76,7 @@ const Features = () => {
         setAbouts(res.data.data);
       })
       .catch((err) => console.log(err));
-  }, [token]);
+  }, [selectedSubject, token]);
 
   useEffect(() => {
     axios
@@ -87,7 +87,7 @@ const Features = () => {
         },
       })
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         setUserRole(res.data.data.role);
       })
       .catch((err) => console.log(err));
@@ -111,13 +111,14 @@ const Features = () => {
           setIsSubjectEnabled(true);
           setIsDestinationSelected(true);
           toast.success('تم انشاء الجهة');
+          // window.location.reload();
         } else {
-          toast.error('حدث خطأ أثناء الإنشاء');
+          toast.error('اسم الجهه موجود من قبل');
         }
       })
       .catch((error) => {
         console.log(error);
-        toast.error('حدث خطأ أثناء الإنشاء');
+        toast.error('اسم الجهه موجود من قبل');
       });
   };
 
@@ -144,6 +145,7 @@ const Features = () => {
           setIsAboutEnabled(true);
           setIsSubjectSelected(true);
           toast.success('تم انشاء الموضوع');
+          // window.location.reload();
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -174,6 +176,7 @@ const Features = () => {
         if (res.data.status) {
           toast.success('تم انشاء البشان');
           setIsAboutSelected(true);
+          // window.location.reload();
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
