@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Features = () => {
   const [destinations, setDestinations] = useState([]);
+  const [selectedDestination, setSelectedDestination] = useState('');
   const [newDestination, setNewDestination] = useState('');
   const [newSubject, setNewSubject] = useState('');
   const [newAbout, setNewAbout] = useState('');
@@ -24,7 +25,10 @@ const Features = () => {
           Authorization: `Bearer ${token}`,
         },
       })
-      .then((res) => setDestinations(res.data.data))
+      .then((res) => {
+        setDestinationId(res.data._id);
+        setDestinations(res.data.data);
+      })
       .catch((err) => console.log(err));
   }, [token]);
 
@@ -32,7 +36,7 @@ const Features = () => {
     axios
       .post(
         'destinations/add',
-        { name: newDestination },
+        { name: newDestination, id: destinationId },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -42,11 +46,10 @@ const Features = () => {
       )
       .then((res) => {
         if (res.data.status) {
-          setDestinationId(res.data.doc._id);
+          setDestinationId(res.data._id);
           setIsSubjectEnabled(true);
           toast.success('تم انشاء الجهة');
-          console.log(res.data.doc._id);
-          // window.location.reload(); // Reload the page to refresh the state
+          console.log(res.data._id);
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -58,7 +61,8 @@ const Features = () => {
   };
 
   const handleConfirmSubject = () => {
-    if (!destinationId) {
+    const selectedId = selectedDestination || destinationId;
+    if (!selectedId) {
       toast.error('الجهة غير محددة');
       return;
     }
@@ -66,7 +70,7 @@ const Features = () => {
     axios
       .post(
         'subjects/add',
-        { name: newSubject, destination: destinationId },
+        { name: newSubject, destination: selectedId },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -80,7 +84,6 @@ const Features = () => {
           setIsAboutEnabled(true);
           toast.success('تم انشاء الموضوع');
           console.log(res.data.doc._id);
-          // window.location.reload(); // Reload the page to refresh the state
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -111,7 +114,6 @@ const Features = () => {
       .then((res) => {
         if (res.data.status) {
           toast.success('تم انشاء البشان');
-          // window.location.reload(); // Reload the page to refresh the state
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -120,6 +122,19 @@ const Features = () => {
         console.log(error);
         toast.error('حدث خطأ أثناء الإنشاء');
       });
+  };
+
+  const handleSelectDestination = (e) => {
+    const selectedId = e.target.value;
+    setSelectedDestination(selectedId);
+    const selectedDest = destinations.find(
+      (destination) => destination._id === selectedId
+    );
+    if (selectedDest) {
+      setNewDestination(selectedDest.name);
+      setDestinationId(selectedDest._id);
+      setIsSubjectEnabled(true);
+    }
   };
 
   return (
@@ -132,6 +147,18 @@ const Features = () => {
       </div>
       <div className="add-new-entry">
         <div className="d-flex flex-column mb-4">
+          <select
+            className="form-control mb-2"
+            value={selectedDestination}
+            onChange={handleSelectDestination}
+          >
+            <option value="">اختر جهة</option>
+            {destinations.map((destination) => (
+              <option key={destination._id} value={destination._id}>
+                {destination.name}
+              </option>
+            ))}
+          </select>
           <input
             type="text"
             className="form-control mb-2"
@@ -154,12 +181,14 @@ const Features = () => {
             placeholder="اضافة موضوع"
             value={newSubject}
             onChange={(e) => setNewSubject(e.target.value)}
-            disabled={!isSubjectEnabled}
+            disabled={!isSubjectEnabled && !selectedDestination}
           />
           <button
             className="btn btn-secondary confirm-btn"
             onClick={handleConfirmSubject}
-            disabled={!newSubject || !isSubjectEnabled}
+            disabled={
+              !newSubject || (!isSubjectEnabled && !selectedDestination)
+            }
           >
             تأكيد
           </button>
