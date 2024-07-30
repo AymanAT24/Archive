@@ -186,7 +186,9 @@ const Home = () => {
                         {(currentPage - 1) * itemsPerPage + index + 1}
                       </td>
 
-                      <td className="p-3">{item?.about?.name || 'غير محدد'}</td>
+                      <td className="p-3">
+                        {item?.about?.subject?.destination?.name || 'غير محدد'}
+                      </td>
                       <td className="p-3">
                         {item?.user.username || 'غير محدد'}
                       </td>
@@ -206,12 +208,6 @@ const Home = () => {
                             تفاصيل
                           </button>
                         </Link>
-                        <button
-                          onClick={() => handleViewDetails(item._id)}
-                          className="btn btn-outline-info mx-2 px-4"
-                        >
-                          عرض الملف
-                        </button>
                         {user.role === 'admin' && (
                           <button
                             onClick={() => handleDelete(item._id)}

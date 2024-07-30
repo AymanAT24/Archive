@@ -1,9 +1,32 @@
 import { Header, SidebarDashboard } from '@/layout';
+import axios from '@/api/axios';
 import { MdOutlineArrowBack } from 'react-icons/md';
-import { Link, useLocation } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const MoreDetails = () => {
+  const navigate = useNavigate();
   const item = useLocation()?.state?.item;
+  const handleViewDetails = (id) => {
+    const token = localStorage.getItem('userToken');
+    const url = `faxes/getOneUserFax/${id}`;
+
+    axios
+      .get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        navigate(`/details/${id}`, { state: { fax: res.data.fax[0] } });
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error('حدث خطأ أثناء جلب البيانات');
+      });
+  };
   return (
     <div className="dashboard d-flex flex-row">
       <div className="container text-center">
@@ -102,6 +125,20 @@ const MoreDetails = () => {
                         <p className="text-muted mb-0 fw-bolder">
                           {item?.date.slice(0, 10)}
                         </p>
+                      </div>
+                    </div>
+                    <hr />
+                    <div className="row">
+                      <div className="col-sm-3">
+                        <p className="mb-0 fw-bolder">الملفات</p>
+                      </div>
+                      <div className="col-sm-9">
+                        <button
+                          onClick={() => handleViewDetails(item._id)}
+                          className="btn btn-outline-info mx-2 px-4"
+                        >
+                          عرض الملف
+                        </button>
                       </div>
                     </div>
                   </div>
