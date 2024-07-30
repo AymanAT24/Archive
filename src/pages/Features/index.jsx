@@ -19,6 +19,7 @@ const Features = () => {
   const [newAbout, setNewAbout] = useState('');
 
   const [token, setToken] = useState(localStorage.getItem('userToken'));
+  const [userRole, setUserRole] = useState('');
 
   const [destinationId, setDestinationId] = useState(null);
   const [subjectId, setSubjectId] = useState(null);
@@ -73,6 +74,21 @@ const Features = () => {
       })
       .then((res) => {
         setAbouts(res.data.data);
+      })
+      .catch((err) => console.log(err));
+  }, [token]);
+
+  useEffect(() => {
+    axios
+      .get('user/myProfile', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        setUserRole(res.data.data.role);
       })
       .catch((err) => console.log(err));
   }, [token]);
@@ -429,20 +445,24 @@ const Features = () => {
             >
               اضافة
             </button>
-            <button
-              className="btn btn-primary"
-              onClick={handleEditDestination}
-              disabled={!selectedDestination && !isTypingNewDestination}
-            >
-              تعديل
-            </button>
-            <button
-              className="btn btn-danger"
-              onClick={handleDeleteDestination}
-              disabled={!selectedDestination && !isTypingNewDestination}
-            >
-              حذف
-            </button>
+            {userRole !== 'user' && (
+              <>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleEditDestination}
+                  disabled={!selectedDestination && !isTypingNewDestination}
+                >
+                  تعديل
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={handleDeleteDestination}
+                  disabled={!selectedDestination && !isTypingNewDestination}
+                >
+                  حذف
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -475,20 +495,24 @@ const Features = () => {
             >
               اضافة
             </button>
-            <button
-              className="btn btn-primary"
-              onClick={handleEditSubject}
-              disabled={!selectedSubject && !newSubject}
-            >
-              تعديل
-            </button>
-            <button
-              className="btn btn-danger"
-              onClick={handleDeleteSubject}
-              disabled={!selectedSubject && !newSubject}
-            >
-              حذف
-            </button>
+            {userRole !== 'user' && (
+              <>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleEditSubject}
+                  disabled={!selectedSubject && !newSubject}
+                >
+                  تعديل
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={handleDeleteSubject}
+                  disabled={!selectedSubject && !newSubject}
+                >
+                  حذف
+                </button>
+              </>
+            )}
           </div>
         </div>
 
@@ -521,20 +545,24 @@ const Features = () => {
             >
               اضافة
             </button>
-            <button
-              className="btn btn-primary"
-              onClick={handleEditAbout}
-              disabled={!selectedAbout && !newAbout}
-            >
-              تعديل
-            </button>
-            <button
-              className="btn btn-danger"
-              onClick={handleDeleteAbout}
-              disabled={!selectedAbout && !newAbout}
-            >
-              حذف
-            </button>
+            {userRole !== 'user' && (
+              <>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleEditAbout}
+                  disabled={!selectedAbout && !newAbout}
+                >
+                  تعديل
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={handleDeleteAbout}
+                  disabled={!selectedAbout && !newAbout}
+                >
+                  حذف
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

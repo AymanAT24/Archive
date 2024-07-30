@@ -269,7 +269,7 @@ const AddNewFax = () => {
         >
           <div className="col-12 text-end fw-bold fs-5 mb-4">
             <label htmlFor="input1" className="form-label">
-              رقم الفاكس
+              كود الفاكس
             </label>
             <input
               name="input1"
@@ -279,7 +279,7 @@ const AddNewFax = () => {
               required
               value={faxNumber}
               onChange={(e) => setFaxNumber(e.target.value)}
-              placeholder="اضف رقم الفاكس*"
+              placeholder="اضف كود الفاكس*"
             />
           </div>
           <div className="col-12 text-end fw-bold fs-5 mb-4">

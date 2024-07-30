@@ -100,7 +100,7 @@ const Header = () => {
                   } text-light fw-bolder`}
                   aria-current="page"
                 >
-                  الخصائص
+                  اضافة مواضيع و جهات
                 </Link>
               </li>
             </ul>
