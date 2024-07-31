@@ -58,7 +58,7 @@ const Features = () => {
         setDestinations(res.data.data);
       })
       .catch((err) => console.log(err));
-  }, [token]);
+  }, [destinations, token]);
 
   useEffect(() => {
     if (selectedDestination) {

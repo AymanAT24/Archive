@@ -48,7 +48,7 @@ const Header = () => {
       localStorage.removeItem('userToken');
       setIsLoggedIn(false);
       toast.success('تم تسجيل الخروج بنجاح');
-      navigate('/auth/login');
+      navigate('/');
       window.location.reload();
     } catch (error) {
       console.error('Failed to logout:', error);
