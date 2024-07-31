@@ -74,7 +74,7 @@ const Features = () => {
         })
         .catch((err) => console.log(err));
     }
-  }, [selectedDestination, token]);
+  }, [selectedDestination, token, destinations]);
 
   useEffect(() => {
     axios
