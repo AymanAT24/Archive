@@ -142,9 +142,9 @@ const Home = () => {
           <Link to={'/addNewFax'}>
             <button
               type="button"
-              className="btn my-5 text-start d-block p-3 btn-secondary"
+              className="btn my-5 fw-bolder text-start d-block p-3 btn-primary"
             >
-              اضافة فاكس جديد
+              + اضافة فاكس جديد
             </button>
           </Link>
         )}
@@ -152,7 +152,7 @@ const Home = () => {
           <Link to={'/addNewFax'}>
             <button
               type="button"
-              className="btn my-5 text-start d-block p-3 btn fw-bolder d-block ms-auto btn-secondary"
+              className="btn my-5 text-start d-block p-3 btn fw-bolder d-block ms-auto btn-primary"
             >
               + اضافة فاكس جديد
             </button>
@@ -167,16 +167,16 @@ const Home = () => {
         {paginatedData?.length > 0 ? (
           <>
             <div className="table-responsive">
-              <table className="table text-center table-hover text-dark p-5 my-5">
-                <thead>
+              <table className="table text-center table-hover p-5 my-5">
+                <thead className="table-headers">
                   <tr>
-                    <th className="p-4">#</th>
-                    <th className="p-4">الجهة</th>
-                    <th className="p-4">المستخدم</th>
-                    <th className="p-4">كود الفاكس</th>
-                    <th className="p-4">نوع الفاكس</th>
-                    <th className="p-4">التاريخ</th>
-                    <th className="p-4">الاحداث</th>
+                    <th className="p-4 ">#</th>
+                    <th className="p-4 table-headers">الجهة</th>
+                    <th className="p-4 table-headers">المستخدم</th>
+                    <th className="p-4 table-headers">كود الفاكس</th>
+                    <th className="p-4 table-headers">نوع الفاكس</th>
+                    <th className="p-4 table-headers">التاريخ</th>
+                    <th className="p-4 table-headers">الاحداث</th>
                   </tr>
                 </thead>
                 <tbody className="text-center p-5">
@@ -198,20 +198,20 @@ const Home = () => {
                       <td className="p-3">
                         {user.role === 'admin' && (
                           <Link to={`/update/${item._id}`} state={{ item }}>
-                            <button className="btn btn-outline-success mx-2 px-4">
+                            <button className="btn btn-success mx-2 px-4">
                               تعديل
                             </button>
                           </Link>
                         )}
                         <Link to={'/moredetails'} state={{ item }}>
-                          <button className="btn btn-outline-info mx-2 px-4">
+                          <button className="btn btn-info mx-2 px-4">
                             تفاصيل
                           </button>
                         </Link>
                         {user.role === 'admin' && (
                           <button
                             onClick={() => handleDelete(item._id)}
-                            className="btn btn-outline-danger mx-2 px-4"
+                            className="btn btn-danger mx-2 px-4"
                           >
                             حذف
                           </button>

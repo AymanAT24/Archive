@@ -111,6 +111,7 @@ const Features = () => {
           setIsSubjectEnabled(true);
           setIsDestinationSelected(true);
           toast.success('تم انشاء الجهة');
+
           // window.location.reload();
         } else {
           toast.error('اسم الجهه موجود من قبل');
@@ -176,7 +177,7 @@ const Features = () => {
         if (res.data.status) {
           toast.success('تم انشاء البشان');
           setIsAboutSelected(true);
-          // window.location.reload();
+          window.location.reload();
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -191,9 +192,14 @@ const Features = () => {
     const selectedId = e.target.value;
     setSelectedDestination(selectedId);
     setIsDestinationSelected(!!selectedId);
-    setIsTypingNewDestination(false);
+    setIsTypingNewDestination();
     setIsSubjectEnabled(true);
     setDestinationId(selectedId);
+    // Reset typing states and enable states for the next sections
+    setIsTypingNewSubject(false);
+    setIsTypingNewAbout(false);
+    setIsSubjectEnabled(!!selectedId);
+    setIsAboutEnabled(false);
   };
 
   const handleSelectSubject = (e) => {
@@ -202,6 +208,8 @@ const Features = () => {
     setIsSubjectSelected(!!selectedId);
     setIsAboutEnabled(true);
     setSubjectId(selectedId);
+    // Reset typing state for the next section
+    setIsTypingNewAbout(false);
   };
 
   const handleSelectAbout = (e) => {
@@ -248,6 +256,7 @@ const Features = () => {
       toast.error('يرجى تحديد الجهة لتعديلها');
       return;
     }
+
     axios
       .patch(
         `destinations/${selectedDestination}`,
@@ -442,7 +451,7 @@ const Features = () => {
           />
           <div className="btn-group">
             <button
-              className="btn btn-secondary confirm-btn"
+              className="btn btn-primary confirm-btn"
               onClick={handleConfirmDestination}
               disabled={!isTypingNewDestination}
             >
@@ -451,7 +460,7 @@ const Features = () => {
             {userRole !== 'user' && (
               <>
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-success"
                   onClick={handleEditDestination}
                   disabled={!selectedDestination && !isTypingNewDestination}
                 >
@@ -492,7 +501,7 @@ const Features = () => {
           />
           <div className="btn-group">
             <button
-              className="btn btn-secondary"
+              className="btn btn-primary"
               onClick={handleConfirmSubject}
               disabled={!isSubjectEnabled}
             >
@@ -501,7 +510,7 @@ const Features = () => {
             {userRole !== 'user' && (
               <>
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-success"
                   onClick={handleEditSubject}
                   disabled={!selectedSubject && !newSubject}
                 >
@@ -542,7 +551,7 @@ const Features = () => {
           />
           <div className="btn-group">
             <button
-              className="btn btn-secondary"
+              className="btn btn-primary"
               onClick={handleConfirmAbout}
               disabled={!isAboutEnabled}
             >
@@ -551,7 +560,7 @@ const Features = () => {
             {userRole !== 'user' && (
               <>
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-success"
                   onClick={handleEditAbout}
                   disabled={!selectedAbout && !newAbout}
                 >
