@@ -4,6 +4,18 @@ import './Features.css';
 import { Header } from '@/layout';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+// Custom confirmation toast component
+const ConfirmToast = ({ message, onConfirm, onCancel }) => (
+  <div>
+    <p>{message}</p>
+    <button className="btn btn-success" onClick={onConfirm}>
+      تأكيد
+    </button>
+    <button className="btn btn-danger" onClick={onCancel}>
+      الغاء
+    </button>
+  </div>
+);
 
 const Features = () => {
   const [destinations, setDestinations] = useState([]);
@@ -107,12 +119,13 @@ const Features = () => {
       )
       .then((res) => {
         if (res.data.status) {
+          const newDest = { _id: res.data._id, name: newDestination };
+          setDestinations([...destinations, newDest]); // Update destinations list
           setDestinationId(res.data._id);
           setIsSubjectEnabled(true);
           setIsDestinationSelected(true);
           toast.success('تم انشاء الجهة');
-
-          // window.location.reload();
+          setNewDestination(''); // Reset input field
         } else {
           toast.error('اسم الجهه موجود من قبل');
         }
@@ -124,11 +137,12 @@ const Features = () => {
   };
 
   const handleConfirmSubject = () => {
-    if (!selectedDestination && !destinationId) {
+    const selectedId = selectedDestination || destinationId;
+    if (!selectedId) {
       toast.error('الجهة غير محددة');
       return;
     }
-    const selectedId = selectedDestination || destinationId;
+
     axios
       .post(
         'subjects/add',
@@ -142,11 +156,13 @@ const Features = () => {
       )
       .then((res) => {
         if (res.data.status) {
+          const newSubj = { _id: res.data.doc._id, name: newSubject };
+          setSubjects([...subjects, newSubj]); // Update subjects list
           setSubjectId(res.data.doc._id);
           setIsAboutEnabled(true);
           setIsSubjectSelected(true);
           toast.success('تم انشاء الموضوع');
-          // window.location.reload();
+          setNewSubject(''); // Reset input field
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -158,14 +174,16 @@ const Features = () => {
   };
 
   const handleConfirmAbout = () => {
-    if (!selectedSubject && !subjectId) {
+    const selectedId = selectedSubject || subjectId;
+    if (!selectedId) {
       toast.error('الموضوع غير محدد');
       return;
     }
+
     axios
       .post(
         'about/add',
-        { name: newAbout, subject: subjectId },
+        { name: newAbout, subject: selectedId },
         {
           headers: {
             'Content-Type': 'application/json',
@@ -175,9 +193,11 @@ const Features = () => {
       )
       .then((res) => {
         if (res.data.status) {
+          const newAbt = { _id: res.data._id, name: newAbout };
+          setAbouts([...abouts, newAbt]); // Update abouts list
           toast.success('تم انشاء البشان');
           setIsAboutSelected(true);
-          window.location.reload();
+          setNewAbout(''); // Reset input field
         } else {
           toast.error('حدث خطأ أثناء الإنشاء');
         }
@@ -273,12 +293,12 @@ const Features = () => {
           toast.success('تم تعديل الجهة بنجاح');
           // Optionally, update state to reflect changes
         } else {
-          toast.error('حدث خطأ أثناء التعديل');
+          toast.error(' اكتب اسم التعديل ');
         }
       })
       .catch((error) => {
         console.log(error);
-        toast.error('حدث خطأ أثناء التعديل');
+        toast.error(' اكتب الاسم للتعديل');
       });
   };
 
@@ -347,25 +367,50 @@ const Features = () => {
       toast.error('يرجى تحديد الجهة لحذفها');
       return;
     }
-    axios
-      .delete(`destinations/${selectedDestination}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (res.data.status) {
-          toast.success('تم حذف الجهة بنجاح');
-          // Optionally, update state to reflect changes
-        } else {
+
+    const confirmDelete = () => {
+      const toastId = toast.loading('جارٍ حذف الجهة...');
+
+      axios
+        .delete(`destinations/${selectedDestination}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          toast.dismiss(toastId);
+          if (res.data.status) {
+            toast.success('تم حذف الجهة بنجاح');
+            setDestinations((prevDestinations) =>
+              prevDestinations.filter(
+                (destination) => destination._id !== selectedDestination
+              )
+            );
+            setSelectedDestination('');
+            setDestinationId(null);
+          } else {
+            toast.error('حدث خطأ أثناء الحذف');
+          }
+        })
+        .catch((error) => {
+          toast.dismiss(toastId);
+          console.log(error);
           toast.error('حدث خطأ أثناء الحذف');
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error('حدث خطأ أثناء الحذف');
-      });
+        });
+    };
+
+    const cancelDelete = () => {
+      toast.dismiss();
+    };
+
+    toast(
+      <ConfirmToast
+        message="سوف يتم حذف الجهة ومواضيعها وشئونها والفاكسات الخاصة بها؟"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
+    );
   };
 
   const handleDeleteSubject = () => {
@@ -373,25 +418,48 @@ const Features = () => {
       toast.error('يرجى تحديد الموضوع لحذفه');
       return;
     }
-    axios
-      .delete(`subjects/${selectedSubject}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (res.data.status) {
-          toast.success('تم حذف الموضوع بنجاح');
-          // Optionally, update state to reflect changes
-        } else {
+
+    const confirmDelete = () => {
+      const toastId = toast.loading('جارٍ حذف الموضوع...');
+
+      axios
+        .delete(`subjects/${selectedSubject}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          toast.dismiss(toastId);
+          if (res.data.status) {
+            toast.success('تم حذف الموضوع بنجاح');
+            setSubjects((prevSubjects) =>
+              prevSubjects.filter((subject) => subject._id !== selectedSubject)
+            );
+            setSelectedSubject('');
+            setSubjectId(null);
+          } else {
+            toast.error('حدث خطأ أثناء الحذف');
+          }
+        })
+        .catch((error) => {
+          toast.dismiss(toastId);
+          console.log(error);
           toast.error('حدث خطأ أثناء الحذف');
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error('حدث خطأ أثناء الحذف');
-      });
+        });
+    };
+
+    const cancelDelete = () => {
+      toast.dismiss();
+    };
+
+    toast(
+      <ConfirmToast
+        message="هل أنت متأكد أنك تريد حذف الموضوع؟"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
+    );
   };
 
   const handleDeleteAbout = () => {
@@ -399,27 +467,49 @@ const Features = () => {
       toast.error('يرجى تحديد البشان لحذفه');
       return;
     }
-    axios
-      .delete(`about/${selectedAbout}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (res.data.status) {
-          toast.success('تم حذف البشان بنجاح');
-          // Optionally, update state to reflect changes
-        } else {
-          toast.error('حدث خطأ أثناء الحذف');
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error('حدث خطأ أثناء الحذف');
-      });
-  };
 
+    const confirmDelete = () => {
+      const toastId = toast.loading('جارٍ حذف البشان...');
+
+      axios
+        .delete(`about/${selectedAbout}`, {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          toast.dismiss(toastId);
+          if (res.data.status) {
+            toast.success('تم حذف البشان بنجاح');
+            setAbouts((prevAbouts) =>
+              prevAbouts.filter((about) => about._id !== selectedAbout)
+            );
+            setSelectedAbout('');
+            setAboutId(null);
+          } else {
+            toast.error('حدث خطأ أثناء الحذف');
+          }
+        })
+        .catch((error) => {
+          toast.dismiss(toastId);
+          console.log(error);
+          toast.error('حدث خطأ أثناء الحذف');
+        });
+    };
+
+    const cancelDelete = () => {
+      toast.dismiss();
+    };
+
+    toast(
+      <ConfirmToast
+        message="هل أنت متأكد أنك تريد حذف البشان؟"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
+    );
+  };
   return (
     <div className="features-container bg-light text-center p-5">
       <div className="shadow-none p-3 mb-5 bg-body-light rounded main-title">
